@@ -10,8 +10,12 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { SignIn, SignUp, signInSchema } from "@/features/auth/schema";
+import {
+  SignIn,
+  SignUp,
+  authSchema,
+  signInSchema,
+} from "@/features/auth/schema";
 import Link from "next/link";
 import { AuthCard } from "../components/auth-card";
 import { InputField } from "../components/input-field";
@@ -22,7 +26,7 @@ type Props = {
 
 export const AuthForm = ({ type }: Props) => {
   const form = useForm({
-    resolver: zodResolver(signInSchema),
+    resolver: zodResolver(authSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -35,7 +39,7 @@ export const AuthForm = ({ type }: Props) => {
   const handleCredentialAuth = () => {
     if (isSignIn) {
       const signInData = form.getValues() as SignIn;
-      console.log("Sign In: ", { signInData });
+      console.log("Sign In: ", signInData);
     } else {
       const signUpData = form.getValues() as SignUp;
       console.log("Sign Up: ", signUpData);
@@ -62,17 +66,26 @@ export const AuthForm = ({ type }: Props) => {
           <form onSubmit={form.handleSubmit(handleCredentialAuth)}>
             <FieldGroup>
               {!isSignIn && (
-                <InputField control={form.control} name="name" label="Name" />
+                <InputField
+                  control={form.control}
+                  name="name"
+                  label="Name"
+                  autoComplete="name"
+                />
               )}
               <InputField
                 control={form.control}
                 name="email"
                 label="Email Address"
+                autoComplete="email"
               />
               <InputField
                 control={form.control}
                 name="password"
                 label="Password"
+                type="password"
+                autoComplete="off"
+                showForgotPassword={isSignIn}
               />
             </FieldGroup>
 

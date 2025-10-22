@@ -11,5 +11,7 @@ export const signUpSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters long"),
 });
 
+export const authSchema = z.union([signInSchema, signUpSchema]);
+
 export type SignUp = z.infer<typeof signUpSchema>;
 export type SignIn = z.infer<typeof signInSchema>;
