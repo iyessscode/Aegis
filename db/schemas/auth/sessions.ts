@@ -7,7 +7,7 @@ import { users } from "@/db/schemas/auth/users";
 export const sessions = authSchema.table(
   "sessions",
   {
-    id: uuid("id").primaryKey(),
+    id: uuid("id").primaryKey().defaultRandom(),
     expiresAt: timestamp("expires_at").notNull(),
     token: text("token").notNull().unique(),
     createdAt: timestamp("created_at").defaultNow().notNull(),

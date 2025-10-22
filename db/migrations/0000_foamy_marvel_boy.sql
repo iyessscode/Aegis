@@ -1,6 +1,6 @@
-CREATE SCHEMA IF NOT EXISTS "auth";
+CREATE SCHEMA "auth";
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "auth"."accounts" (
+CREATE TABLE "auth"."accounts" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"account_id" text NOT NULL,
 	"provider_id" text NOT NULL,
@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS "auth"."accounts" (
 	CONSTRAINT "uq_accounts_provider_account" UNIQUE("provider_id","account_id")
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "auth"."sessions" (
-	"id" uuid PRIMARY KEY NOT NULL,
+CREATE TABLE "auth"."sessions" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"expires_at" timestamp NOT NULL,
 	"token" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS "auth"."sessions" (
 	CONSTRAINT "uq_sessions_token" UNIQUE("token")
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "auth"."users" (
-	"id" uuid PRIMARY KEY NOT NULL,
+CREATE TABLE "auth"."users" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
 	"email" text NOT NULL,
 	"email_verified" boolean DEFAULT false NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS "auth"."users" (
 	CONSTRAINT "uq_users_email" UNIQUE("email")
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "auth"."verifications" (
+CREATE TABLE "auth"."verifications" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"identifier" text NOT NULL,
 	"value" text NOT NULL,

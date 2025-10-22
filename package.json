@@ -14,7 +14,12 @@
     "auth:generate": "npx @better-auth/cli generate --config ./config/auth/server.ts --output ./db/schemas/better-auth.ts --yes"
   },
   "dependencies": {
+    "@arcjet/ip": "^1.0.0-beta.13",
+    "@arcjet/next": "^1.0.0-beta.13",
+    "@hookform/resolvers": "^5.2.2",
     "@neondatabase/serverless": "^1.0.2",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "better-auth": "^1.3.28",
     "class-variance-authority": "^0.7.1",
@@ -23,8 +28,11 @@
     "drizzle-orm": "^0.44.6",
     "lucide-react": "^0.546.0",
     "next": "16.0.0",
+    "next-themes": "^0.4.6",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "react-hook-form": "^7.65.0",
+    "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
