@@ -3,20 +3,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+import { LoadingSwap } from "@/components/loading-swap";
 import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import {
-  SignIn,
-  SignUp,
-  authSchema,
-  signInSchema,
-} from "@/features/auth/schema";
+import { FieldGroup } from "@/components/ui/field";
+import { authClient } from "@/config/auth/client";
+import { SignIn, SignUp, authSchema } from "@/features/auth/schema";
 import Link from "next/link";
+import { toast } from "sonner";
 import { AuthCard } from "../components/auth-card";
 import { InputField } from "../components/input-field";
 
@@ -35,14 +28,51 @@ export const AuthForm = ({ type }: Props) => {
   });
 
   const isSignIn = type === "sign-in";
+  const { isSubmitting } = form.formState;
 
-  const handleCredentialAuth = () => {
+  const handleCredentialAuth = async () => {
     if (isSignIn) {
       const signInData = form.getValues() as SignIn;
       console.log("Sign In: ", signInData);
+      await authClient.signIn.email(
+        {
+          ...signInData,
+        },
+        {
+          onSuccess() {
+            toast.success(`Welcome Back!`);
+            form.reset();
+          },
+          onError(ctx) {
+            if (ctx.error.status === 403) {
+              toast.success("Please verify your email address");
+            } else {
+              toast.error(ctx.error.message);
+            }
+          },
+        },
+      );
     } else {
       const signUpData = form.getValues() as SignUp;
       console.log("Sign Up: ", signUpData);
+      await authClient.signUp.email(
+        {
+          ...signUpData,
+        },
+
+        {
+          onSuccess() {
+            toast.success(`Welcome!`);
+            form.reset();
+          },
+          onError(ctx) {
+            if (ctx.error.status === 403) {
+              toast.success("Please verify your email address");
+            }
+            toast.error(ctx.error.message);
+          },
+        },
+      );
     }
   };
 
@@ -70,6 +100,7 @@ export const AuthForm = ({ type }: Props) => {
                   control={form.control}
                   name="name"
                   label="Name"
+                  disabled={isSubmitting}
                   autoComplete="name"
                 />
               )}
@@ -77,6 +108,7 @@ export const AuthForm = ({ type }: Props) => {
                 control={form.control}
                 name="email"
                 label="Email Address"
+                disabled={isSubmitting}
                 autoComplete="email"
               />
               <InputField
@@ -84,13 +116,19 @@ export const AuthForm = ({ type }: Props) => {
                 name="password"
                 label="Password"
                 type="password"
+                disabled={isSubmitting}
                 autoComplete="off"
                 showForgotPassword={isSignIn}
               />
             </FieldGroup>
 
-            <Button type="submit" size="lg" className="mt-12 w-full">
-              Continue
+            <Button
+              type="submit"
+              size="lg"
+              disabled={isSubmitting}
+              className="mt-12 w-full"
+            >
+              <LoadingSwap isLoading={isSubmitting}>Continue</LoadingSwap>
             </Button>
           </form>
         </>

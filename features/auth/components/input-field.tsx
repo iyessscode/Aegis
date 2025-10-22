@@ -48,7 +48,12 @@ export const InputField = <T extends FieldValues>({
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
           <div className="flex items-center justify-between px-4">
-            <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
+            <FieldLabel
+              htmlFor={field.name}
+              className={cn(disabled && "text-muted-foreground")}
+            >
+              {label}
+            </FieldLabel>
             {type === "password" &&
               showForgotPassword &&
               (disabled ? (
@@ -69,6 +74,7 @@ export const InputField = <T extends FieldValues>({
               {...field}
               id={field.name}
               aria-invalid={fieldState.invalid}
+              disabled={disabled}
               placeholder={placeholder}
               type={
                 type === "password" ? (isVisible ? "text" : "password") : "text"
@@ -82,6 +88,7 @@ export const InputField = <T extends FieldValues>({
                 size="icon"
                 variant="ghost"
                 onClick={toggleVisibility}
+                disabled={disabled}
                 className="absolute top-1/2 right-4 -translate-y-1/2 bg-transparent hover:bg-transparent"
               >
                 {isVisible ? <EyeIcon /> : <EyeOffIcon />}

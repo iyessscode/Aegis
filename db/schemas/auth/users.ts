@@ -15,7 +15,7 @@ import { sessions } from "@/db/schemas/auth/sessions";
 export const users = authSchema.table(
   "users",
   {
-    id: uuid("id").primaryKey(),
+    id: uuid("id").primaryKey().defaultRandom(),
     name: text("name").notNull(),
     email: text("email").notNull().unique(),
     emailVerified: boolean("email_verified").default(false).notNull(),
