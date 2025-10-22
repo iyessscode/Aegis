@@ -14,6 +14,8 @@
     "auth:generate": "npx @better-auth/cli generate --config ./config/auth/server.ts --output ./db/schemas/better-auth.ts --yes"
   },
   "dependencies": {
+    "@arcjet/ip": "^1.0.0-beta.13",
+    "@arcjet/next": "^1.0.0-beta.13",
     "@hookform/resolvers": "^5.2.2",
     "@neondatabase/serverless": "^1.0.2",
     "@radix-ui/react-label": "^2.1.7",
