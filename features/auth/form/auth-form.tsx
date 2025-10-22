@@ -1,17 +1,19 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+
+import { authClient } from "@/config/auth/client";
 
 import { LoadingSwap } from "@/components/loading-swap";
 import { Button } from "@/components/ui/button";
 import { FieldGroup } from "@/components/ui/field";
-import { authClient } from "@/config/auth/client";
+
+import { AuthCard } from "@/features/auth/components/auth-card";
+import { InputField } from "@/features/auth/components/input-field";
 import { SignIn, SignUp, authSchema } from "@/features/auth/schema";
-import Link from "next/link";
-import { toast } from "sonner";
-import { AuthCard } from "../components/auth-card";
-import { InputField } from "../components/input-field";
 
 type Props = {
   type: "sign-in" | "sign-up";

@@ -1,5 +1,11 @@
 "use client";
 
+import Link from "next/link";
+import { HTMLInputAutoCompleteAttribute, useCallback, useState } from "react";
+import { Control, Controller, FieldValues, Path } from "react-hook-form";
+
+import { EyeIcon, EyeOffIcon } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -8,12 +14,8 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { HTMLInputAutoCompleteAttribute, useCallback, useState } from "react";
-import { Control, Controller, FieldValues, Path } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
-import Link from "next/link";
 
 type FormFieldProps<T extends FieldValues> = {
   control: Control<T>;
