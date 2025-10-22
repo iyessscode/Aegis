@@ -1,10 +1,16 @@
 import Image from "next/image";
 
+import { Button } from "@/components/ui/button";
+
 export default function HomePage() {
   return (
-    <main className="grid h-screen place-items-center">
-      <div className="mx-auto flex max-w-5xl flex-col items-center justify-center gap-y-8">
-        <div className="relative mx-auto h-32 w-96">
+    <main className="relative grid h-screen place-items-center">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="from-primary/20 absolute top-1/2 left-1/2 -z-50 size-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-radial to-transparent blur-3xl" />
+      </div>
+
+      <div className="mx-auto flex max-w-5xl flex-col items-center justify-center gap-y-2 px-4 lg:gap-y-2">
+        <div className="relative mx-auto h-20 w-56 md:h-24 md:w-96">
           <Image
             src="./logo-text.svg"
             alt="logo"
@@ -13,10 +19,10 @@ export default function HomePage() {
             className="object-contain"
           />
         </div>
-        <h3 className="text-center text-4xl font-bold">
+        <h3 className="from-primary/50 to-primary bg-linear-to-t bg-clip-text text-center text-xl font-bold text-transparent md:text-4xl">
           Protected. Verified. Aegis.
         </h3>
-        <p className="text-center text-gray-500">
+        <p className="text-muted-foreground mt-4 text-center text-sm md:text-base lg:mt-8">
           Aegis is a secure authentication platform built to protect users and
           applications through modern identity management. Designed for
           dark-mode interfaces, it combines robust encryption, seamless user
@@ -24,9 +30,9 @@ export default function HomePage() {
           login is verified, encrypted, and trusted — your digital shield for
           access security.
         </p>
-        <button className="mt-4 rounded-full bg-teal-400 px-8 py-2 font-semibold">
+        <Button size="lg" className="mt-12 md:mt-6">
           Get Started!
-        </button>
+        </Button>
       </div>
     </main>
   );
