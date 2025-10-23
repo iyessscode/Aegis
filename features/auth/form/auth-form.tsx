@@ -9,17 +9,20 @@ import { authClient } from "@/config/auth/client";
 
 import { LoadingSwap } from "@/components/loading-swap";
 import { Button } from "@/components/ui/button";
-import { FieldGroup } from "@/components/ui/field";
+import { FieldGroup, FieldSeparator } from "@/components/ui/field";
 
 import { AuthCard } from "@/features/auth/components/auth-card";
 import { InputField } from "@/features/auth/components/input-field";
 import { SignIn, SignUp, authSchema } from "@/features/auth/schema";
+import { useRouter } from "next/navigation";
+import { SocialAuth } from "../components/social-auth";
 
 type Props = {
   type: "sign-in" | "sign-up";
 };
 
 export const AuthForm = ({ type }: Props) => {
+  const router = useRouter();
   const form = useForm({
     resolver: zodResolver(authSchema),
     defaultValues: {
@@ -44,6 +47,7 @@ export const AuthForm = ({ type }: Props) => {
           onSuccess() {
             toast.success(`Welcome Back!`);
             form.reset();
+            router.push("/welcome");
           },
           onError(ctx) {
             if (ctx.error.status === 403) {
@@ -64,8 +68,9 @@ export const AuthForm = ({ type }: Props) => {
 
         {
           onSuccess() {
-            toast.success(`Welcome!`);
+            toast.success(`Welcome. Please sign in to continue!`);
             form.reset();
+            router.push("/sign-in");
           },
           onError(ctx) {
             if (ctx.error.status === 403) {
@@ -133,8 +138,10 @@ export const AuthForm = ({ type }: Props) => {
               <LoadingSwap isLoading={isSubmitting}>Continue</LoadingSwap>
             </Button>
           </form>
+          <FieldSeparator className="mt-4">Or continue with</FieldSeparator>
         </>
       }
+      footer={<SocialAuth />}
     />
   );
 };
