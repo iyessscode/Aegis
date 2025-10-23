@@ -1,10 +1,10 @@
 "use client";
 
+import { LoaderIcon } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { toast } from "sonner";
 
-import { authClient } from "@/config/auth/client";
+import { useAuthStore } from "@/store/use-auth-store";
 
 import { Button } from "@/components/ui/button";
 
@@ -20,29 +20,23 @@ const PROVIDERS = [
 ] as const;
 
 export const SocialAuth = () => {
-  const handleSocialAuth = async (
-    provider: (typeof PROVIDERS)[number]["name"],
-  ) => {
-    await authClient.signIn.social(
-      {
-        provider,
-        callbackURL: "/welcome",
-      },
-      {
-        onError(ctx) {
-          toast.error(ctx.error.message);
-        },
-      },
-    );
-  };
+  const isLoading = useAuthStore((state) => state.loading);
+  const signInSocial = useAuthStore((state) => state.signInSocial);
 
   return PROVIDERS.map((provider) => (
     <Button
       key={provider.name}
       variant="outline"
-      onClick={() => handleSocialAuth(provider.name)}
+      onClick={() =>
+        signInSocial({ provider: provider.name, callbackURL: "/welcome" })
+      }
+      disabled={isLoading.global}
     >
-      <provider.Icon />
+      {isLoading.provider === provider.name ? (
+        <LoaderIcon className="size-4 animate-spin" />
+      ) : (
+        <provider.Icon />
+      )}
       <span className="capitalize">{provider.name}</span>
     </Button>
   ));

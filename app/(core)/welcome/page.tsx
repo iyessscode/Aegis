@@ -1,21 +1,22 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { authClient } from "@/config/auth/client";
-import { LoaderIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+
+import { LoaderIcon } from "lucide-react";
+
+import { LoadingSwap } from "@/components/loading-swap";
+import { Button } from "@/components/ui/button";
+
+import { authClient } from "@/config/auth/client";
+import { useAuthStore } from "@/store/use-auth-store";
 
 export default function WelcomePage() {
   const { data, isPending } = authClient.useSession();
   const router = useRouter();
 
-  useEffect(() => {
-    authClient.getSession().then((session) => {
-      if (session.data == null) router.push("/sign-in");
-    });
-  }, [router]);
+  const handleSignOut = useAuthStore((state) => state.signOut);
+  const isLoading = useAuthStore((state) => state.loading);
 
   if (isPending) {
     return (
@@ -51,11 +52,14 @@ export default function WelcomePage() {
           <Button
             variant="destructive"
             size="lg"
-            onClick={() => {
-              authClient.signOut();
-            }}
+            onClick={async () =>
+              await handleSignOut({
+                onSuccess: () => router.push("/"),
+              })
+            }
+            disabled={isLoading.global}
           >
-            Sign Out
+            <LoadingSwap isLoading={isLoading.global}>Sign Out</LoadingSwap>
           </Button>
         </div>
       </div>

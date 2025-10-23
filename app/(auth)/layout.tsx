@@ -1,11 +1,24 @@
+"use client";
+
+import { authClient } from "@/config/auth/client";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 type Props = {
   children: React.ReactNode;
 };
 
 export default function AuthLayout({ children }: Props) {
+  const router = useRouter();
+
+  useEffect(() => {
+    authClient.getSession().then((session) => {
+      if (session?.data != null) router.push("/welcome");
+    });
+  }, [router]);
+
   return (
     <div className="mx-auto grid h-screen w-full place-items-center">
       <div className="flex w-full max-w-7xl flex-col items-center justify-center gap-y-6">

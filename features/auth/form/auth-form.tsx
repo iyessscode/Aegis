@@ -2,10 +2,10 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
-import { authClient } from "@/config/auth/client";
+import { useAuthStore } from "@/store/use-auth-store";
 
 import { LoadingSwap } from "@/components/loading-swap";
 import { Button } from "@/components/ui/button";
@@ -13,9 +13,8 @@ import { FieldGroup, FieldSeparator } from "@/components/ui/field";
 
 import { AuthCard } from "@/features/auth/components/auth-card";
 import { InputField } from "@/features/auth/components/input-field";
+import { SocialAuth } from "@/features/auth/components/social-auth";
 import { SignIn, SignUp, authSchema } from "@/features/auth/schema";
-import { useRouter } from "next/navigation";
-import { SocialAuth } from "../components/social-auth";
 
 type Props = {
   type: "sign-in" | "sign-up";
@@ -23,6 +22,10 @@ type Props = {
 
 export const AuthForm = ({ type }: Props) => {
   const router = useRouter();
+  const isLoading = useAuthStore((state) => state.loading);
+  const signInCredential = useAuthStore((state) => state.signInCredential);
+  const signUpCredential = useAuthStore((state) => state.signUpCredential);
+
   const form = useForm({
     resolver: zodResolver(authSchema),
     defaultValues: {
@@ -33,53 +36,23 @@ export const AuthForm = ({ type }: Props) => {
   });
 
   const isSignIn = type === "sign-in";
-  const { isSubmitting } = form.formState;
 
   const handleCredentialAuth = async () => {
     if (isSignIn) {
-      const signInData = form.getValues() as SignIn;
-      console.log("Sign In: ", signInData);
-      await authClient.signIn.email(
-        {
-          ...signInData,
-        },
-        {
-          onSuccess() {
-            toast.success(`Welcome Back!`);
-            form.reset();
-            router.push("/welcome");
-          },
-          onError(ctx) {
-            if (ctx.error.status === 403) {
-              toast.success("Please verify your email address");
-            } else {
-              toast.error(ctx.error.message);
-            }
-          },
-        },
-      );
+      const { email, password } = form.getValues() as SignIn;
+      await signInCredential({
+        email,
+        password,
+        onSuccess: () => router.push("/welcome"),
+      });
     } else {
-      const signUpData = form.getValues() as SignUp;
-      console.log("Sign Up: ", signUpData);
-      await authClient.signUp.email(
-        {
-          ...signUpData,
-        },
-
-        {
-          onSuccess() {
-            toast.success(`Welcome. Please sign in to continue!`);
-            form.reset();
-            router.push("/sign-in");
-          },
-          onError(ctx) {
-            if (ctx.error.status === 403) {
-              toast.success("Please verify your email address");
-            }
-            toast.error(ctx.error.message);
-          },
-        },
-      );
+      const { name, email, password } = form.getValues() as SignUp;
+      await signUpCredential({
+        name,
+        email,
+        password,
+        onSuccess: () => router.push("/welcome"),
+      });
     }
   };
 
@@ -107,7 +80,7 @@ export const AuthForm = ({ type }: Props) => {
                   control={form.control}
                   name="name"
                   label="Name"
-                  disabled={isSubmitting}
+                  disabled={isLoading.global}
                   autoComplete="name"
                 />
               )}
@@ -115,7 +88,7 @@ export const AuthForm = ({ type }: Props) => {
                 control={form.control}
                 name="email"
                 label="Email Address"
-                disabled={isSubmitting}
+                disabled={isLoading.global}
                 autoComplete="email"
               />
               <InputField
@@ -123,7 +96,7 @@ export const AuthForm = ({ type }: Props) => {
                 name="password"
                 label="Password"
                 type="password"
-                disabled={isSubmitting}
+                disabled={isLoading.global}
                 autoComplete="off"
                 showForgotPassword={isSignIn}
               />
@@ -132,10 +105,16 @@ export const AuthForm = ({ type }: Props) => {
             <Button
               type="submit"
               size="lg"
-              disabled={isSubmitting}
+              disabled={isLoading.global}
               className="mt-12 w-full"
             >
-              <LoadingSwap isLoading={isSubmitting}>Continue</LoadingSwap>
+              <LoadingSwap
+                isLoading={
+                  isLoading.global && isLoading.provider === "credential"
+                }
+              >
+                Continue
+              </LoadingSwap>
             </Button>
           </form>
           <FieldSeparator className="mt-4">Or continue with</FieldSeparator>
