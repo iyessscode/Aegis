@@ -3,8 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { useAegis } from "@/context/aegis-provider";
 import { getSubjectText, SubjectType } from "@/lib/email";
+import { useAegis } from "@/providers/aegis-provider";
 
 import { LoadingSwap } from "@/components/loading-swap";
 import { Button } from "@/components/ui/button";

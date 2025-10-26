@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 
 import { Toaster } from "@/components/ui/sonner";
-import { AegisProvider } from "@/context/aegis-provider";
+import { AegisProvider } from "@/providers/aegis-provider";
 
 const inter = Inter({
   subsets: ["latin"],

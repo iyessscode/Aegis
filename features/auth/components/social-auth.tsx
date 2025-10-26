@@ -2,8 +2,8 @@
 
 import { LoaderIcon } from "lucide-react";
 
-import { useAegis } from "@/context/aegis-provider";
 import { socialProviders } from "@/lib/providers";
+import { useAegis } from "@/providers/aegis-provider";
 
 import { Button } from "@/components/ui/button";
 
