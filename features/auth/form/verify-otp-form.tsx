@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+import { useAegis } from "@/context/aegis-provider";
 import { getSubjectText, SubjectType } from "@/lib/email";
 
 import { LoadingSwap } from "@/components/loading-swap";
@@ -19,6 +20,8 @@ type Props = {
 };
 
 export const VerifyOTPForm = ({ email, type }: Props) => {
+  const { emailOtp } = useAegis();
+
   const form = useForm({
     resolver: zodResolver(verifyOtpSchema),
     defaultValues: {
@@ -27,7 +30,11 @@ export const VerifyOTPForm = ({ email, type }: Props) => {
   });
 
   const handleVerifyOtp = async (values: VerifyOTP) => {
-    console.log(values);
+    await emailOtp({
+      email,
+      otpCode: values.otpCode,
+      type,
+    });
   };
 
   return (

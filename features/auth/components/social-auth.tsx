@@ -1,29 +1,16 @@
 "use client";
 
 import { LoaderIcon } from "lucide-react";
-import { FaGithub } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
 
-import { useAuthStore } from "@/store/use-auth-store";
+import { useAegis } from "@/context/aegis-provider";
+import { socialProviders } from "@/lib/providers";
 
 import { Button } from "@/components/ui/button";
 
-const PROVIDERS = [
-  {
-    name: "google",
-    Icon: FcGoogle,
-  },
-  {
-    name: "github",
-    Icon: FaGithub,
-  },
-] as const;
-
 export const SocialAuth = () => {
-  const isLoading = useAuthStore((state) => state.loading);
-  const signInSocial = useAuthStore((state) => state.signInSocial);
+  const { signInSocial, isLoading } = useAegis();
 
-  return PROVIDERS.map((provider) => (
+  return socialProviders.map((provider) => (
     <Button
       key={provider.name}
       variant="outline"

@@ -2,10 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
-import { useAuthStore } from "@/store/use-auth-store";
+import { useAegis } from "@/context/aegis-provider";
 
 import { LoadingSwap } from "@/components/loading-swap";
 import { Button } from "@/components/ui/button";
@@ -21,10 +20,7 @@ type Props = {
 };
 
 export const AuthForm = ({ type }: Props) => {
-  const router = useRouter();
-  const isLoading = useAuthStore((state) => state.loading);
-  const signInCredential = useAuthStore((state) => state.signInCredential);
-  const signUpCredential = useAuthStore((state) => state.signUpCredential);
+  const { signInCredential, signUpCredential, isLoading } = useAegis();
 
   const form = useForm({
     resolver: zodResolver(authSchema),
@@ -43,7 +39,6 @@ export const AuthForm = ({ type }: Props) => {
       await signInCredential({
         email,
         password,
-        onSuccess: () => router.push("/welcome"),
       });
     } else {
       const { name, email, password } = form.getValues() as SignUp;
@@ -51,7 +46,6 @@ export const AuthForm = ({ type }: Props) => {
         name,
         email,
         password,
-        onSuccess: () => router.push("/welcome"),
       });
     }
   };
@@ -82,7 +76,7 @@ export const AuthForm = ({ type }: Props) => {
                   label="Name"
                   placeholder="Enter your name"
                   disabled={isLoading.global}
-                  autoComplete="name"
+                  autoComplete="name webauthn"
                 />
               )}
               <InputField
@@ -91,7 +85,7 @@ export const AuthForm = ({ type }: Props) => {
                 label="Email Address"
                 placeholder="Enter your email address"
                 disabled={isLoading.global}
-                autoComplete="email"
+                autoComplete="email webauthn"
               />
               <InputField
                 control={form.control}
