@@ -80,6 +80,7 @@ export const AuthForm = ({ type }: Props) => {
                   control={form.control}
                   name="name"
                   label="Name"
+                  placeholder="Enter your name"
                   disabled={isLoading.global}
                   autoComplete="name"
                 />
@@ -88,6 +89,7 @@ export const AuthForm = ({ type }: Props) => {
                 control={form.control}
                 name="email"
                 label="Email Address"
+                placeholder="Enter your email address"
                 disabled={isLoading.global}
                 autoComplete="email"
               />
@@ -95,6 +97,7 @@ export const AuthForm = ({ type }: Props) => {
                 control={form.control}
                 name="password"
                 label="Password"
+                placeholder="Enter your password"
                 type="password"
                 disabled={isLoading.global}
                 autoComplete="off"
@@ -120,7 +123,11 @@ export const AuthForm = ({ type }: Props) => {
           <FieldSeparator className="mt-4">Or continue with</FieldSeparator>
         </>
       }
-      footer={<SocialAuth />}
+      footer={
+        <div className="grid w-full gap-4 sm:grid-cols-2">
+          <SocialAuth />
+        </div>
+      }
     />
   );
 };

@@ -1,11 +1,17 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-
-import { db } from "@/config/db";
+import { emailOTP } from "better-auth/plugins";
 
 import { env } from "@/data/env";
+import { getSubjectText } from "@/lib/email";
+
+import { db } from "@/config/db";
+import { resend } from "@/config/resend";
+
 import * as schema from "@/db/schema";
+
+import OTPEmail from "@/features/email/components/otp-email";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -20,6 +26,7 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
   },
   socialProviders: {
     google: {
@@ -37,5 +44,24 @@ export const auth = betterAuth({
       maxAge: 60 * 15, // 15 minutes
     },
   },
-  plugins: [nextCookies()],
+  plugins: [
+    nextCookies(),
+    emailOTP({
+      otpLength: 6,
+      expiresIn: 300,
+      sendVerificationOnSignUp: true,
+      async sendVerificationOTP({ email, otp, type }) {
+        await resend.emails.send({
+          from: env.RESEND_SENDER_EMAIL,
+          to: email,
+          subject: getSubjectText(type),
+          react: OTPEmail({
+            otpCode: otp,
+            purpose: type,
+            expiryMinutes: "5",
+          }),
+        });
+      },
+    }),
+  ],
 });

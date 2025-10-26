@@ -57,7 +57,7 @@
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(64.035% 0.02258 181.658);
-  --accent: oklch(0.269 0 0);
+  --accent: hsl(169, 54%, 8%);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(68.753% 0.14194 21.428);
   --border: oklch(1 0 0 / 10%);
@@ -85,6 +85,10 @@
   body {
     @apply bg-background text-foreground;
   }
+  .linear-background {
+    @apply to-background border-primary/30 rounded-md border bg-linear-to-b from-[#041b20];
+  }
+
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus,

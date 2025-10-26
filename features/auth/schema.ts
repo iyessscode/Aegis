@@ -13,5 +13,10 @@ export const signInSchema = z.object({
 
 export const authSchema = z.union([signInSchema, signUpSchema]);
 
+export const verifyOtpSchema = z.object({
+  otpCode: z.string().regex(/^\d{6}$/, "OTP must be a 6-digit code"),
+});
+
+export type VerifyOTP = z.infer<typeof verifyOtpSchema>;
 export type SignUp = z.infer<typeof signUpSchema>;
 export type SignIn = z.infer<typeof signInSchema>;

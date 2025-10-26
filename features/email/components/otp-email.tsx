@@ -1,4 +1,3 @@
-import { getSubjectText, SubjectType } from "@/lib/email";
 import {
   Body,
   Container,
@@ -12,6 +11,8 @@ import {
   Tailwind,
   Text,
 } from "@react-email/components";
+
+import { getSubjectText, SubjectType } from "@/lib/email";
 
 type OTPEmailProps = {
   otpCode: string;
@@ -42,7 +43,7 @@ export default function OTPEmail({
       <Head />
       <Preview>Your verification code: {otpCode}</Preview>
       <Tailwind>
-        <Body className="bg-gray-100 py-10 font-sans">
+        <Body className="bg-gray-100 pb-10 font-sans">
           <Container className="mx-auto max-w-[600px] rounded-xl bg-white shadow-lg">
             {/* Main Content */}
             <Section className="px-8 py-10">
@@ -101,5 +102,6 @@ export default function OTPEmail({
 }
 
 OTPEmail.PreviewProps = {
+  purpose: "sign-in",
   otpCode: "789012",
 };

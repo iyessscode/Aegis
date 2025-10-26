@@ -27,11 +27,7 @@ export const AuthCard = ({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>{content}</CardContent>
-      {footer && (
-        <CardFooter className="grid w-full gap-4 sm:grid-cols-2">
-          {footer}
-        </CardFooter>
-      )}
+      {footer && <CardFooter>{footer}</CardFooter>}
     </Card>
   );
 };
