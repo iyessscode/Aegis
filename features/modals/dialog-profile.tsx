@@ -18,7 +18,7 @@ export const DialogProfile = () => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="focus:outline-none">
+      <DialogContent>
         <DialogHeader className="flex flex-row items-center gap-2">
           <UserAvatar size="lg" image={null} name="Aldiyes Paskalis Birta" />
           <div className="flex flex-col items-start gap-2">

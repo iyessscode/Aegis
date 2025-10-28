@@ -1,16 +1,17 @@
 "use client";
 
+import { ErrorContext } from "better-auth/react";
 import { useRouter } from "next/navigation";
 import React, { createContext, useContext } from "react";
 import { toast } from "sonner";
 
 import { authClient } from "@/config/auth/client";
+import { SubjectType } from "@/lib/email";
+import { AllProviders, SocialProviders } from "@/lib/providers";
 import { useLoadingStore } from "@/store/use-loading-store";
 
 import { DialogProfile } from "@/features/modals/dialog-profile";
-import { SubjectType } from "@/lib/email";
-import { AllProviders, SocialProviders } from "@/lib/providers";
-import { ErrorContext } from "better-auth/react";
+import { DialogSecurity } from "@/features/modals/dialog-security";
 
 type SignInCredentialParams = {
   email: string;
@@ -243,6 +244,7 @@ export function AegisProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       <DialogProfile />
+      <DialogSecurity />
       {children}
     </AegisContext.Provider>
   );

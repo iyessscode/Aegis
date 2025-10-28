@@ -5,13 +5,15 @@ import { useEffect } from "react";
 
 import {
   Building2Icon,
+  IdCardIcon,
+  LockIcon,
   LogOutIcon,
   Paintbrush,
-  ShieldCheckIcon,
   UserCircleIcon,
 } from "lucide-react";
 
 import { authClient } from "@/config/auth/client";
+import { useModalStore } from "@/store/use-modal-store";
 
 import {
   DropdownMenu,
@@ -24,7 +26,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { UserInfo } from "@/features/user/components/user-info";
-import { useModalStore } from "@/store/use-modal-store";
 
 export const UserButton = () => {
   const router = useRouter();
@@ -32,6 +33,10 @@ export const UserButton = () => {
 
   const toggleDialogProfile = useModalStore(
     (state) => state.toggleDialogProfile,
+  );
+
+  const toggleDialogSecurity = useModalStore(
+    (state) => state.toggleDialogSecurity,
   );
 
   useEffect(() => {
@@ -74,9 +79,14 @@ export const UserButton = () => {
               action: toggleDialogProfile,
             },
             {
-              name: "Security",
-              icon: <ShieldCheckIcon />,
+              name: "Account",
+              icon: <IdCardIcon />,
               action: () => {},
+            },
+            {
+              name: "Security",
+              icon: <LockIcon />,
+              action: toggleDialogSecurity,
             },
             {
               name: "Preference",
