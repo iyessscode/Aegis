@@ -1,4 +1,4 @@
-import { VerifyOTPForm } from "@/features/auth/form/verify-otp-form";
+import { VerifyOTPForm } from "@/features/auth/components/form/verify-otp-form";
 import { SubjectType } from "@/lib/email";
 
 type Props = {
@@ -8,5 +8,5 @@ type Props = {
 export default async function VerifyOTPPage({ searchParams }: Props) {
   const { email, type } = await searchParams;
 
-  return <VerifyOTPForm email={email} type={type}/>;
+  return <VerifyOTPForm email={email} type={type} />;
 }
