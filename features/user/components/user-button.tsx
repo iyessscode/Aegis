@@ -24,10 +24,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { UserInfo } from "@/features/user/components/user-info";
+import { useModalStore } from "@/store/use-modal-store";
 
 export const UserButton = () => {
   const router = useRouter();
   const { data, isPending, isRefetching } = authClient.useSession();
+
+  const toggleDialogProfile = useModalStore(
+    (state) => state.toggleDialogProfile,
+  );
 
   useEffect(() => {
     if (!isPending && !isRefetching && data == null) {
@@ -66,7 +71,7 @@ export const UserButton = () => {
             {
               name: "Profile",
               icon: <UserCircleIcon />,
-              action: () => {},
+              action: toggleDialogProfile,
             },
             {
               name: "Security",
