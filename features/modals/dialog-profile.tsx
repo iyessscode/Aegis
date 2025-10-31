@@ -1,5 +1,7 @@
 "use client";
 
+import { useModalStore } from "@/store/use-modal-store";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,8 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useModalStore } from "@/store/use-modal-store";
-import { UserAvatar } from "../user/components/user-avatar";
+
+import { UserAvatar } from "@/features/user/components/user-avatar";
 
 export const DialogProfile = () => {
   const open = useModalStore((state) => state.openDialogProfile);

@@ -5,6 +5,7 @@ import { useEffect } from "react";
 
 import {
   Building2Icon,
+  ChevronRight,
   IdCardIcon,
   LockIcon,
   LogOutIcon,
@@ -48,9 +49,9 @@ export const UserButton = () => {
   if (isPending || isRefetching) {
     return (
       <div className="flex h-14 w-60 items-center justify-center gap-2">
-        <span className="from-primary/30 to-primary border-primary size-4 animate-bounce rounded-full border bg-linear-to-t transition-transform delay-100" />
-        <span className="from-primary/30 to-primary border-primary size-4 animate-bounce rounded-full border bg-linear-to-t transition-transform delay-200" />
-        <span className="from-primary/30 to-primary border-primary size-4 animate-bounce rounded-full border bg-linear-to-t transition-transform delay-300" />
+        <span className="border-primary size-4 animate-bounce rounded-full border transition-transform delay-100" />
+        <span className="border-primary size-4 animate-bounce rounded-full border transition-transform delay-200" />
+        <span className="border-primary size-4 animate-bounce rounded-full border transition-transform delay-300" />
       </div>
     );
   }
@@ -59,8 +60,9 @@ export const UserButton = () => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="linear-background cursor-pointer px-2 focus:outline-none">
+      <DropdownMenuTrigger className="bg-card flex cursor-pointer items-center justify-center gap-x-4 rounded-md border px-4 focus:outline-none">
         <UserInfo {...data.user} />
+        <ChevronRight className="size-4-" />
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="linear-background max-w-80 min-w-64"

@@ -23,7 +23,6 @@ export default function WelcomePage() {
         </div>
         <h3 className="text-muted-foreground text-xl font-bold md:text-4xl">
           Welcome
-          <span className="from-primary/50 to-primary bg-linear-to-t bg-clip-text text-center text-transparent"></span>
         </h3>
         <div className="mt-8">
           <UserButton />
