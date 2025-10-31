@@ -1,5 +1,8 @@
 "use client";
 
+import { useState } from "react";
+import z from "zod";
+
 import { useModalStore } from "@/store/use-modal-store";
 
 import { Button } from "@/components/ui/button";
@@ -12,55 +15,64 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+import { Label } from "@/components/ui/label";
 import { UserAvatar } from "@/features/user/components/user-avatar";
+import { cn } from "@/lib/utils";
+import { useEditStore } from "@/store/use-edit-store";
+import { User } from "better-auth";
+import { useAppForm } from "../form/hooks/form-hook";
+import UserProfileForm from "../user/components/form/user-profile-form";
 
-export const DialogProfile = () => {
+export const DialogProfile = ({ user }: { user: User | null }) => {
+  if (user === null) return null;
   const open = useModalStore((state) => state.openDialogProfile);
   const onOpenChange = useModalStore((state) => state.toggleDialogProfile);
+  const toggleEdit = useEditStore((state) => state.toggleEdit);
+  const isEditing = useEditStore((state) => state.isEditing);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader className="flex flex-row items-center gap-2">
-          <UserAvatar size="lg" image={null} name="Aldiyes Paskalis Birta" />
+          <UserAvatar size="lg" image={user.image} name={user.name} />
           <div className="flex flex-col items-start gap-2">
             <DialogTitle className="max-w-52 truncate md:max-w-80">
-              Aldiyes Paskalis Birta
+              {user.name}
             </DialogTitle>
             <DialogDescription className="max-w-52 truncate md:max-w-80">
-              aldiyes17032002@gmail.com
+              {user.email}
             </DialogDescription>
           </div>
         </DialogHeader>
         <div className="flex flex-col gap-4">
-          <UserInformation keyInfo="Name" value="Aldiyes Paskalis Birta" />
-          <UserInformation
-            keyInfo="Email address"
-            value="aldiyes17032002@gmail.com"
+          <UserProfileForm
+            name={user.name}
+            email={user.email}
+            image={user.image}
           />
-          <UserInformation keyInfo="Mobile number" value="0812-5513-5019" />
         </div>
         <DialogFooter className="mt-4">
-          <Button>Update profile</Button>
+          {isEditing ? (
+            <div className="flex flex-row items-end justify-center gap-4">
+              <Button
+                variant="secondary"
+                className="flex-1"
+                onClick={toggleEdit}
+              >
+                Cancle
+              </Button>
+              <Button className="flex-1">Save change</Button>
+            </div>
+          ) : (
+            <Button onClick={toggleEdit}>Update profile</Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-};
-
-const UserInformation = ({
-  keyInfo,
-  value,
-}: {
-  keyInfo: string;
-  value: string;
-}) => {
-  return (
-    <div className="flex flex-row items-center justify-between border-b py-4">
-      <h3 className="text-sm font-medium">{keyInfo}</h3>
-      <span className="max-w-48 truncate text-sm font-extralight md:max-w-80">
-        {value}
-      </span>
-    </div>
   );
 };

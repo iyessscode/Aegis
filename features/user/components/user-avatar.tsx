@@ -36,7 +36,7 @@ export const UserAvatar = ({
 }: UserAvatarProps) => {
   return (
     <Avatar className={cn(avatarVariants({ size }), className)}>
-      {image != null && (
+      {image && (
         <Image
           src={image}
           alt={name}
@@ -45,15 +45,17 @@ export const UserAvatar = ({
           className="object-cover"
         />
       )}
-      <AvatarFallback>
-        <Image
-          src={generateAvatar(name)}
-          alt={name}
-          width={150}
-          height={150}
-          className="object-cover"
-        />
-      </AvatarFallback>
+      {!image && (
+        <AvatarFallback>
+          <Image
+            src={generateAvatar(name)}
+            alt={name}
+            width={150}
+            height={150}
+            className="object-cover"
+          />
+        </AvatarFallback>
+      )}
     </Avatar>
   );
 };

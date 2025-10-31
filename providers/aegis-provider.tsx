@@ -2,7 +2,7 @@
 
 import { ErrorContext } from "better-auth/react";
 import { useRouter } from "next/navigation";
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { authClient } from "@/config/auth/client";
@@ -12,6 +12,7 @@ import { useLoadingStore } from "@/store/use-loading-store";
 
 import { DialogProfile } from "@/features/modals/dialog-profile";
 import { DialogSecurity } from "@/features/modals/dialog-security";
+import { User } from "better-auth";
 
 type SignInCredentialParams = {
   email: string;
@@ -52,6 +53,14 @@ const AegisContext = createContext<AegisContextType | undefined>(undefined);
 
 export function AegisProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await authClient.getSession();
+      setUser(data?.user ?? null);
+    })();
+  }, []);
 
   const setLoading = useLoadingStore((state) => state.setLoading);
   const clearLoading = useLoadingStore((state) => state.clearLoading);
@@ -243,7 +252,7 @@ export function AegisProvider({ children }: { children: React.ReactNode }) {
         emailOtp,
       }}
     >
-      <DialogProfile />
+      <DialogProfile user={user} />
       <DialogSecurity />
       {children}
     </AegisContext.Provider>
