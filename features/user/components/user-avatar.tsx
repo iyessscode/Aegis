@@ -6,9 +6,11 @@ import { generateAvatar } from "@/lib/avatar";
 import { cn } from "@/lib/utils";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { PencilIcon } from "lucide-react";
 
 const avatarVariants = cva(
-  "border rounded-full overflow-hidden flex items-center justify-center",
+  "border rounded-full flex items-center justify-center",
   {
     variants: {
       size: {
@@ -26,6 +28,7 @@ const avatarVariants = cva(
 
 type UserAvatarProps = Pick<User, "name" | "image"> & {
   className?: string;
+  isEditing?: boolean;
 } & VariantProps<typeof avatarVariants>;
 
 export const UserAvatar = ({
@@ -33,29 +36,44 @@ export const UserAvatar = ({
   image,
   className,
   size,
+  isEditing = false,
 }: UserAvatarProps) => {
   return (
-    <Avatar className={cn(avatarVariants({ size }), className)}>
-      {image && (
-        <Image
-          src={image}
-          alt={name}
-          width={150}
-          height={150}
-          className="object-cover"
-        />
-      )}
-      {!image && (
-        <AvatarFallback>
+    <div
+      className={cn("relative mx-auto bg-red-500", avatarVariants({ size }))}
+    >
+      <Avatar
+        className={cn("overflow-hidden", avatarVariants({ size }), className)}
+      >
+        {image && (
           <Image
-            src={generateAvatar(name)}
+            src={image}
             alt={name}
             width={150}
             height={150}
             className="object-cover"
           />
-        </AvatarFallback>
+        )}
+        {!image && (
+          <AvatarFallback>
+            <Image
+              src={generateAvatar(name)}
+              alt={name}
+              width={150}
+              height={150}
+              className="object-cover"
+            />
+          </AvatarFallback>
+        )}
+      </Avatar>
+      {isEditing && (
+        <Button
+          className="absolute right-0 bottom-2 rounded-full"
+          size="icon-sm"
+        >
+          <PencilIcon />
+        </Button>
       )}
-    </Avatar>
+    </div>
   );
 };

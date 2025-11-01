@@ -41,6 +41,7 @@ type AegisContextType = {
     global: boolean;
     provider: AllProviders;
   };
+  user: User | null;
 
   // Actions
   signInCredential: (params: SignInCredentialParams) => Promise<void>;
@@ -245,6 +246,7 @@ export function AegisProvider({ children }: { children: React.ReactNode }) {
   return (
     <AegisContext.Provider
       value={{
+        user,
         isLoading,
         signInSocial,
         signUpCredential,
@@ -252,7 +254,7 @@ export function AegisProvider({ children }: { children: React.ReactNode }) {
         emailOtp,
       }}
     >
-      <DialogProfile user={user} />
+      <DialogProfile />
       <DialogSecurity />
       {children}
     </AegisContext.Provider>
