@@ -15,7 +15,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import { UserAvatar } from "@/features/user/components/user-avatar";
 import { useAegis } from "@/providers/aegis-provider";
 import { useEditStore } from "@/store/use-edit-store";
 import UserProfileForm from "../user/components/form/user-profile-form";
@@ -41,7 +40,7 @@ export const DialogProfile = () => {
           </DialogDescription>
         </DialogHeader>
         <UserProfileForm
-          image={user.image}
+          image={user.image ?? null}
           name={user.name}
           email={user.email}
         />

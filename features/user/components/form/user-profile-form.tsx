@@ -1,24 +1,31 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { FieldGroup, FieldSet } from "@/components/ui/field";
 import { useAppForm } from "@/features/form/hooks/form-hook";
 import { cn } from "@/lib/utils";
 import { useEditStore } from "@/store/use-edit-store";
-import { PencilIcon } from "lucide-react";
+import { useModalStore } from "@/store/use-modal-store";
+import { useEffect } from "react";
 import z from "zod";
 import { UserAvatar } from "../user-avatar";
 
 const userProfileSchema = z.object({
-  image: z.string().nullish(),
   name: z.string().min(3, "Name musut be at least 3 characters long"),
   email: z.email("Please enter a valid email address"),
+  image: z.string().nullable(),
 });
 
 type UserProfile = z.infer<typeof userProfileSchema>;
 
-export default function UserProfileForm(props: UserProfile) {
+export default function UserProfileForm({ name, email, image }: UserProfile) {
   const form = useAppForm({
-    defaultValues: props,
+    defaultValues: {
+      name,
+      email,
+      image,
+    },
     validators: {
       onSubmit: userProfileSchema,
     },
@@ -26,6 +33,14 @@ export default function UserProfileForm(props: UserProfile) {
 
   const toggleEdit = useEditStore((state) => state.toggleEdit);
   const isEditing = useEditStore((state) => state.isEditing);
+  const setEditing = useEditStore((state) => state.setEditing);
+  const isDialogOpen = useModalStore((state) => state.openDialogProfile);
+
+  useEffect(() => {
+    if (!isDialogOpen) {
+      setEditing(false);
+    }
+  }, [isDialogOpen]);
 
   return (
     <form
@@ -40,8 +55,8 @@ export default function UserProfileForm(props: UserProfile) {
           <UserAvatar
             size="xl"
             className="mx-auto"
-            name={props.name}
-            image={props.image}
+            name={name}
+            image={image}
             isEditing={isEditing}
           />
 
@@ -49,7 +64,7 @@ export default function UserProfileForm(props: UserProfile) {
             {(field) => (
               <field.InputSetting
                 label="Name"
-                value={props.name}
+                value={name}
                 isEditing={isEditing}
               />
             )}
@@ -58,7 +73,7 @@ export default function UserProfileForm(props: UserProfile) {
             {(field) => (
               <field.InputSetting
                 label="Email"
-                value={props.name}
+                value={name}
                 isEditing={isEditing}
               />
             )}

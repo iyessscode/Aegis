@@ -8,6 +8,7 @@ type States = {
 
 type Actions = {
   toggleEdit: () => void;
+  setEditing: (isEditing: boolean) => void;
 };
 
 export const useEditStore = create<States & Actions>()((set) => ({
@@ -15,5 +16,8 @@ export const useEditStore = create<States & Actions>()((set) => ({
 
   toggleEdit: () => {
     set((state) => ({ isEditing: !state.isEditing }));
+  },
+  setEditing: (isEditing) => {
+    set({ isEditing });
   },
 }));
