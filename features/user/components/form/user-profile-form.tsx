@@ -3,11 +3,14 @@
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { FieldGroup, FieldSet } from "@/components/ui/field";
+import { authClient } from "@/config/auth/client";
 import { useAppForm } from "@/features/form/hooks/form-hook";
 import { cn } from "@/lib/utils";
 import { useEditStore } from "@/store/use-edit-store";
 import { useModalStore } from "@/store/use-modal-store";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { toast } from "sonner";
 import z from "zod";
 import { UserAvatar } from "../user-avatar";
 
@@ -20,6 +23,7 @@ const userProfileSchema = z.object({
 type UserProfile = z.infer<typeof userProfileSchema>;
 
 export default function UserProfileForm({ name, email, image }: UserProfile) {
+  const router = useRouter();
   const form = useAppForm({
     defaultValues: {
       name,
@@ -28,6 +32,44 @@ export default function UserProfileForm({ name, email, image }: UserProfile) {
     },
     validators: {
       onSubmit: userProfileSchema,
+    },
+    onSubmit: async ({ value }) => {
+      const promises = [
+        authClient.updateUser({
+          name: value.name,
+          image: value.image,
+        }),
+      ];
+
+      if (value.email != email) {
+        promises.push(
+          authClient.changeEmail({
+            newEmail: value.email,
+            callbackURL: "/welcome",
+          }),
+        );
+      }
+
+      const res = await Promise.all(promises);
+      const updateUserResult = res[0];
+      const emailResult = res[1] ?? { error: false };
+
+      if (updateUserResult.error) {
+        toast.error(updateUserResult.error.message);
+      } else if (emailResult.error) {
+        toast.error(emailResult.error.message);
+      } else {
+        if (value.email !== email) {
+          toast.success(
+            "Verify your new email address to complete the change.",
+          );
+        } else {
+          toast.success("Profile updated successfully");
+        }
+      }
+
+      router.refresh();
+      setEditing(false);
     },
   });
 
@@ -90,7 +132,11 @@ export default function UserProfileForm({ name, email, image }: UserProfile) {
             >
               Cancle
             </Button>
-            <Button type="submit" className={cn(!isEditing && "hidden")}>
+            <Button
+              type="submit"
+              className={cn(!isEditing && "hidden")}
+              disabled={form.state.isSubmitting}
+            >
               Save change
             </Button>
           </DialogFooter>

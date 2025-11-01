@@ -44,6 +44,22 @@ export const auth = betterAuth({
       maxAge: 60 * 15, // 15 minutes
     },
   },
+  user: {
+    changeEmail: {
+      enabled: true,
+
+      sendChangeEmailVerification: async (
+        { user, newEmail, url, token },
+        request,
+      ) => {
+        console.log({ user });
+        console.log({ newEmail });
+        console.log({ url });
+        console.log({ token });
+        console.log({ request });
+      },
+    },
+  },
   plugins: [
     nextCookies(),
     emailOTP({
