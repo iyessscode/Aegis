@@ -11,6 +11,7 @@ import { resend } from "@/config/resend";
 
 import * as schema from "@/db/schema";
 
+import ChangeEmailVerification from "@/features/email/components/change-email";
 import OTPEmail from "@/features/email/components/otp-email";
 
 export const auth = betterAuth({
@@ -57,6 +58,16 @@ export const auth = betterAuth({
         console.log({ url });
         console.log({ token });
         console.log({ request });
+        await resend.emails.send({
+          from: env.RESEND_SENDER_EMAIL,
+          to: newEmail,
+          subject: "Verify New Email Address",
+          react: ChangeEmailVerification({
+            username: user.name,
+            verificationUrl: url,
+            expireMinutes: 10,
+          }),
+        });
       },
     },
   },

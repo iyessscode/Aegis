@@ -68,6 +68,7 @@ export const UserAvatar = ({
       </Avatar>
       {isEditing && (
         <Button
+          type="button"
           className="absolute right-0 bottom-2 rounded-full"
           size="icon-sm"
         >
