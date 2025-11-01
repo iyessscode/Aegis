@@ -11,4 +11,5 @@ export const env = {
   GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET as string,
   RESEND_API_KEY: process.env.RESEND_API_KEY as string,
   RESEND_SENDER_EMAIL: process.env.RESEND_SENDER_EMAIL as string,
+  UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN as string,
 };

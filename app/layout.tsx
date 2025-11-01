@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 
 import { Toaster } from "@/components/ui/sonner";
+import { UploadThingSSR } from "@/features/uploadthing/components/uploadthing-ssr";
 import { AegisProvider } from "@/providers/aegis-provider";
 
 const inter = Inter({
@@ -27,6 +28,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
         <AegisProvider>
+          <UploadThingSSR />
           <Toaster position="top-center" expand />
           {children}
         </AegisProvider>
