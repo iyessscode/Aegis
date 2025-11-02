@@ -5,12 +5,14 @@ type AuthContainerProps = {
   title: string;
   description?: string | React.ReactNode;
   content: React.ReactNode;
+  useSocialAuth?: boolean;
 };
 
 export const AuthContainer = ({
   title,
   description,
   content,
+  useSocialAuth = true,
 }: AuthContainerProps) => {
   return (
     <div className="w-full px-4 sm:px-0">
@@ -19,12 +21,14 @@ export const AuthContainer = ({
         <p className="text-muted-foreground font-medium">{description}</p>
       </header>
       <main className="mt-6">{content}</main>
-      <footer className="">
-        <FieldSeparator className="my-4">Or continue with</FieldSeparator>
-        <div className="grid w-full gap-4 sm:grid-cols-2">
-          <SocialAuth />
-        </div>
-      </footer>
+      {useSocialAuth && (
+        <footer>
+          <FieldSeparator className="my-4">Or continue with</FieldSeparator>
+          <div className="grid w-full gap-4 sm:grid-cols-2">
+            <SocialAuth />
+          </div>
+        </footer>
+      )}
     </div>
   );
 };

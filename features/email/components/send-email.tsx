@@ -20,7 +20,7 @@ type SendEmailProps = {
 };
 
 const SendEmail = ({
-  type,
+  type = "forget-password",
   userEmail,
   userName,
   actionUrl,
@@ -184,13 +184,6 @@ const SendEmail = ({
       </Tailwind>
     </Html>
   );
-};
-
-SendEmail.PreviewProps = {
-  type: "email-verification",
-  userEmail: "iyessscode@gmail.com",
-  userName: "John",
-  actionUrl: "https://yourapp.com/verify-email?token=abc123xyz",
 };
 
 export default SendEmail;

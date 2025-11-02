@@ -26,6 +26,19 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
+    async sendResetPassword({ user, url }) {
+      await resend.emails.send({
+        from: env.RESEND_SENDER_EMAIL,
+        to: user.email,
+        subject: getSubjectText("forget-password"),
+        react: SendEmail({
+          userName: user.name,
+          userEmail: user.email,
+          type: "forget-password",
+          actionUrl: url,
+        }),
+      });
+    },
   },
   emailVerification: {
     autoSignInAfterVerification: true,
