@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import z from "zod";
-
+import { useAegis } from "@/providers/aegis-provider";
+import { useEditStore } from "@/store/use-edit-store";
 import { useModalStore } from "@/store/use-modal-store";
 
 import { Button } from "@/components/ui/button";
@@ -15,9 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import { useAegis } from "@/providers/aegis-provider";
-import { useEditStore } from "@/store/use-edit-store";
-import UserProfileForm from "../user/components/form/user-profile-form";
+import UserProfileForm from "@/features/user/components/form/user-profile-form";
 
 export const DialogProfile = () => {
   const { user } = useAegis();

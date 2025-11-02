@@ -1,5 +1,24 @@
-import { AuthForm } from "@/features/auth/components/form/auth-form";
+import Link from "next/link";
+
+import { AuthContainer } from "@/features/auth/components/auth-container";
+import SignUpForm from "@/features/auth/components/form/sign-up-form";
 
 export default function SignUpPage() {
-  return <AuthForm type="sign-up" />;
+  return (
+    <AuthContainer
+      title="Sign up for an account"
+      description={
+        <>
+          Already have an Account?{" "}
+          <Link
+            href="/sign-in"
+            className="text-primary hover:underline hover:underline-offset-4"
+          >
+            Sign In
+          </Link>
+        </>
+      }
+      content={<SignUpForm />}
+    />
+  );
 }

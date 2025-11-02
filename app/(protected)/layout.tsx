@@ -1,6 +1,7 @@
-import { auth } from "@/config/auth/server";
 import { headers as getHeaders } from "next/headers";
 import { redirect } from "next/navigation";
+
+import { auth } from "@/config/auth/server";
 
 type Props = {
   children: React.ReactNode;

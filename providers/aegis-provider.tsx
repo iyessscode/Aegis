@@ -1,13 +1,11 @@
 "use client";
 
 import { User } from "better-auth";
-import { ErrorContext } from "better-auth/react";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { authClient } from "@/config/auth/client";
-import { SubjectType } from "@/lib/email";
 import { AllProviders, SocialProviders } from "@/lib/providers";
 import { useLoadingStore } from "@/store/use-loading-store";
 
@@ -28,7 +26,6 @@ type SignInSocialParams = {
   provider: SocialProviders;
   callbackURL: string;
 };
-
 
 type UpdateUserParams = {
   name: string;

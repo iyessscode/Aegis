@@ -32,7 +32,7 @@ const avatarVariants = cva(
 type UserAvatarProps = Pick<User, "name" | "image"> & {
   className?: string;
   isEditing?: boolean;
-  onFileChange: (file: File) => void;
+  onFileChange?: (file: File) => void;
 } & VariantProps<typeof avatarVariants>;
 
 export const UserAvatar = ({
@@ -51,7 +51,7 @@ export const UserAvatar = ({
     if (!file) return;
 
     const blobUrl = URL.createObjectURL(file);
-    onFileChange(file);
+    onFileChange?.(file);
     setPreview(blobUrl);
   }
 
