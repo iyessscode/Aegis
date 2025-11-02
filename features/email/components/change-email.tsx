@@ -15,13 +15,11 @@ import {
 type ChangeEmailVerificationProps = {
   username: string;
   verificationUrl: string;
-  expireMinutes: number;
 };
 
 const ChangeEmailVerification = ({
   username,
   verificationUrl,
-  expireMinutes,
 }: ChangeEmailVerificationProps) => {
   return (
     <Html lang="en" dir="ltr">
@@ -69,14 +67,6 @@ const ChangeEmailVerification = ({
                 >
                   Verify Email
                 </Button>
-              </Section>
-
-              {/* Expiry Notice */}
-              <Section className="mb-8 border-l-4 border-[#f54a00] bg-orange-50 py-4 pl-5">
-                <Text className="mb-0 text-[14px] text-orange-800">
-                  This verification link expires in {expireMinutes} minutes for
-                  your security.
-                </Text>
               </Section>
 
               {/* Alternative Link */}

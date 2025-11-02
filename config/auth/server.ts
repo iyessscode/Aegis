@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { emailOTP } from "better-auth/plugins";
+import { emailOTP, username } from "better-auth/plugins";
 
 import { env } from "@/data/env";
 import { getSubjectText } from "@/lib/email";
@@ -11,8 +11,7 @@ import { resend } from "@/config/resend";
 
 import * as schema from "@/db/schema";
 
-import ChangeEmailVerification from "@/features/email/components/change-email";
-import OTPEmail from "@/features/email/components/otp-email";
+import SendEmail from "@/features/email/components/send-email";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -34,6 +33,19 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     sendOnSignIn: true,
     expiresIn: 60 * 15, // 15 minutes
+    async sendVerificationEmail({ user, url }) {
+      await resend.emails.send({
+        from: env.RESEND_SENDER_EMAIL,
+        to: user.email,
+        subject: getSubjectText("email-verification"),
+        react: SendEmail({
+          userName: user.name,
+          userEmail: user.email,
+          type: "email-verification",
+          actionUrl: url,
+        }),
+      });
+    },
   },
   socialProviders: {
     google: {
@@ -60,41 +72,7 @@ export const auth = betterAuth({
     },
     changeEmail: {
       enabled: true,
-      sendChangeEmailVerification: async ({ user, url }) => {
-        console.log({ url });
-        await resend.emails.send({
-          from: env.RESEND_SENDER_EMAIL,
-          to: user.email,
-          subject: "Approve Email Change",
-          react: ChangeEmailVerification({
-            username: user.name,
-            verificationUrl: url,
-            expireMinutes: 15,
-          }),
-        });
-      },
     },
+    plugins: [nextCookies()],
   },
-  plugins: [
-    nextCookies(),
-    emailOTP({
-      otpLength: 6,
-      expiresIn: 300,
-      sendVerificationOnSignUp: true,
-      allowedAttempts: 10,
-      overrideDefaultEmailVerification: true,
-      async sendVerificationOTP({ email, otp, type }) {
-        await resend.emails.send({
-          from: env.RESEND_SENDER_EMAIL,
-          to: email,
-          subject: getSubjectText(type),
-          react: OTPEmail({
-            otpCode: otp,
-            purpose: type,
-            expiryMinutes: "15",
-          }),
-        });
-      },
-    }),
-  ],
 });

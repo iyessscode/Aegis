@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { getSubjectText, SubjectType } from "@/lib/email";
-import { useAegis } from "@/providers/aegis-provider";
+import { OTPPurpose, useAegis } from "@/providers/aegis-provider";
 
 import { LoadingSwap } from "@/components/loading-swap";
 import { Button } from "@/components/ui/button";
@@ -19,9 +19,10 @@ import { VerifyOTP, verifyOtpSchema } from "@/features/auth/schema";
 type Props = {
   email: string;
   type: SubjectType;
+  purpose: OTPPurpose;
 };
 
-export const VerifyOTPForm = ({ email, type }: Props) => {
+export const VerifyOTPForm = ({ email, type, purpose }: Props) => {
   const { emailOtp } = useAegis();
   const [counter, setCounter] = useState(60);
 
@@ -37,6 +38,7 @@ export const VerifyOTPForm = ({ email, type }: Props) => {
       email,
       otpCode: values.otpCode,
       type,
+      purpose,
     });
   };
 

@@ -29,10 +29,13 @@ type SignInSocialParams = {
   callbackURL: string;
 };
 
+export type OTPPurpose = "change-email" | "sign-up";
+
 type OTPParams = {
   email: string;
   otpCode: string;
   type: SubjectType;
+  purpose?: OTPPurpose;
 };
 
 type UpdateUserParams = {
@@ -188,7 +191,12 @@ export function AegisProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
-  const emailOtp = async ({ email, otpCode, type }: OTPParams) => {
+  const emailOtp = async ({
+    email,
+    otpCode,
+    type,
+    purpose = "sign-up",
+  }: OTPParams) => {
     const handleOtpError = (ctx: ErrorContext, prefix: string) => {
       console.log(`ERROR_EMAIL_OTP_${prefix}:`, ctx.error);
       const { code, message } = ctx.error;
@@ -207,10 +215,17 @@ export function AegisProvider({ children }: { children: React.ReactNode }) {
         },
         {
           onSuccess(ctx) {
-            toast.success(
-              `Welcome, ${ctx.data.user.name}, Please sign in to continue`,
-            );
-            router.push("/sign-in");
+            if (purpose === "change-email") {
+              toast.success(
+                `Your email has been changed to ${ctx.data.user.email}`,
+              );
+              router.push("/welcome");
+            } else {
+              toast.success(
+                `Welcome, ${ctx.data.user.name}, Please sign in to continue`,
+              );
+              router.push("/sign-in");
+            }
           },
           onError(ctx) {
             handleOtpError(ctx, "EMAIL_VERIFICATION");
@@ -270,15 +285,18 @@ export function AegisProvider({ children }: { children: React.ReactNode }) {
         }),
         email !== user?.email
           ? (() => {
-              const params = new URLSearchParams({
-                email,
-                type: "email-verification",
-              });
-
-              return authClient.changeEmail({
-                newEmail: email,
-                callbackURL: `/verify-otp?${params.toString()}`,
-              });
+              return authClient.changeEmail(
+                {
+                  newEmail: email,
+                  callbackURL: `/verify-otp/change-email?email=${email}`,
+                },
+                {
+                  onSuccess() {},
+                  onError(ctx) {
+                    console.log("ERROR_CHANGE_EMAIL: ", ctx.error);
+                  },
+                },
+              );
             })()
           : Promise.resolve({ error: false }),
       ]);
