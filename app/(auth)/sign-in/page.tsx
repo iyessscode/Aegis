@@ -6,7 +6,7 @@ import SignInForm from "@/features/auth/components/form/sign-in-form";
 export default function SignInPage() {
   return (
     <AuthContainer
-      title="Sign in to continue"
+      title="Sign in to Aegis"
       description={
         <>
           Don&apos;t have an Account?{" "}

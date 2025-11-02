@@ -6,7 +6,7 @@ import SignUpForm from "@/features/auth/components/form/sign-up-form";
 export default function SignUpPage() {
   return (
     <AuthContainer
-      title="Sign up for an account"
+      title="Create an account"
       description={
         <>
           Already have an Account?{" "}
