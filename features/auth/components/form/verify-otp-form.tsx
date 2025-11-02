@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { getSubjectText, SubjectType } from "@/lib/email";
@@ -10,6 +11,7 @@ import { LoadingSwap } from "@/components/loading-swap";
 import { Button } from "@/components/ui/button";
 import { FieldGroup } from "@/components/ui/field";
 
+import { authClient } from "@/config/auth/client";
 import { AuthCard } from "@/features/auth/components/auth-card";
 import { InputOTPField } from "@/features/auth/components/input-otp-field";
 import { VerifyOTP, verifyOtpSchema } from "@/features/auth/schema";
@@ -21,6 +23,7 @@ type Props = {
 
 export const VerifyOTPForm = ({ email, type }: Props) => {
   const { emailOtp } = useAegis();
+  const [counter, setCounter] = useState(60);
 
   const form = useForm({
     resolver: zodResolver(verifyOtpSchema),
@@ -36,6 +39,20 @@ export const VerifyOTPForm = ({ email, type }: Props) => {
       type,
     });
   };
+
+  const handleResendOtp = async () => {
+    await authClient.emailOtp.sendVerificationOtp({
+      email,
+      type,
+    });
+    setCounter(60);
+  };
+
+  useEffect(() => {
+    if (counter <= 0) return;
+    const timer = setInterval(() => setCounter((s) => s - 1), 1000);
+    return () => clearInterval(timer);
+  }, [counter]);
 
   return (
     <AuthCard
@@ -73,8 +90,14 @@ export const VerifyOTPForm = ({ email, type }: Props) => {
           <p className="text-muted-foreground text-sm tracking-tight">
             Don&apos; recive the code?
           </p>
-          <Button type="button" variant="link" className="px-0">
-            Resend
+          <Button
+            type="button"
+            onClick={handleResendOtp}
+            variant="link"
+            className="px-0"
+            disabled={counter > 0}
+          >
+            {counter > 0 ? `Resend (${counter}s)` : "Resend"}
           </Button>
         </div>
       }
