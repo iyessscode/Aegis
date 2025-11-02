@@ -31,13 +31,6 @@ type SignInSocialParams = {
 
 export type OTPPurpose = "change-email" | "sign-up";
 
-type OTPParams = {
-  email: string;
-  otpCode: string;
-  type: SubjectType;
-  purpose?: OTPPurpose;
-};
-
 type UpdateUserParams = {
   name: string;
   email: string;
@@ -57,7 +50,6 @@ type AegisContextType = {
   signInCredential: (params: SignInCredentialParams) => Promise<void>;
   signUpCredential: (params: SignUpCredentialParams) => Promise<void>;
   signInSocial: (params: SignInSocialParams) => Promise<void>;
-  emailOtp: (params: OTPParams) => Promise<void>;
   updateUser: (params: UpdateUserParams) => Promise<void>;
 };
 
@@ -103,10 +95,10 @@ export function AegisProvider({ children }: { children: React.ReactNode }) {
         async onError(ctx) {
           console.log("ERROR_SIGN_IN_CREDENTIAL: ", ctx.error);
           if (ctx.error.code === "EMAIL_NOT_VERIFIED") {
-            await authClient.emailOtp.sendVerificationOtp(
+            await authClient.sendVerificationEmail(
               {
                 email,
-                type: "sign-in",
+                callbackURL: "/welcome",
               },
               {
                 onError(ctx) {
@@ -118,13 +110,13 @@ export function AegisProvider({ children }: { children: React.ReactNode }) {
                 },
               },
             );
+
             const params = new URLSearchParams({
               email,
-              type: "sign-in",
             });
 
             toast.success("Please check your email for the verification code");
-            router.push(`/verify-otp?${params.toString()}`);
+            router.push(`/verify-email?${params.toString()}`);
           } else {
             toast.error(ctx.error.message);
           }
@@ -152,11 +144,10 @@ export function AegisProvider({ children }: { children: React.ReactNode }) {
         onSuccess() {
           const params = new URLSearchParams({
             email,
-            type: "email-verification",
           });
 
           toast.success("Welcome. Please verify your email address!");
-          router.push(`/verify-otp?${params.toString()}`);
+          router.push(`/verify-email?${params.toString()}`);
         },
         onError(ctx) {
           console.log("ERROR_SIGN_UP_CREDENTIAL: ", ctx.error);
@@ -191,85 +182,6 @@ export function AegisProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
-  const emailOtp = async ({
-    email,
-    otpCode,
-    type,
-    purpose = "sign-up",
-  }: OTPParams) => {
-    const handleOtpError = (ctx: ErrorContext, prefix: string) => {
-      console.log(`ERROR_EMAIL_OTP_${prefix}:`, ctx.error);
-      const { code, message } = ctx.error;
-      if (code === "INVALID_OTP")
-        toast.error("Invalid or expired OTP code. Please try again.");
-      else if (code === "OTP_EXPIRED")
-        toast.error("Your verification code has expired. Request a new one.");
-      else toast.error(message);
-    };
-
-    if (type === "email-verification") {
-      await authClient.emailOtp.verifyEmail(
-        {
-          email,
-          otp: otpCode,
-        },
-        {
-          onSuccess(ctx) {
-            if (purpose === "change-email") {
-              toast.success(
-                `Your email has been changed to ${ctx.data.user.email}`,
-              );
-              router.push("/welcome");
-            } else {
-              toast.success(
-                `Welcome, ${ctx.data.user.name}, Please sign in to continue`,
-              );
-              router.push("/sign-in");
-            }
-          },
-          onError(ctx) {
-            handleOtpError(ctx, "EMAIL_VERIFICATION");
-          },
-        },
-      );
-    } else if (type === "sign-in") {
-      await authClient.signIn.emailOtp(
-        {
-          email,
-          otp: otpCode,
-        },
-        {
-          onSuccess(ctx) {
-            toast.success(`Welcome, ${ctx.data.user.name}!`);
-            router.push("/welcome");
-          },
-          onError(ctx) {
-            handleOtpError(ctx, "SIGN_IN");
-          },
-        },
-      );
-    } else {
-      authClient.emailOtp.checkVerificationOtp(
-        {
-          type,
-          email,
-          otp: otpCode,
-        },
-        {
-          onSuccess() {
-            const params = new URLSearchParams();
-            params.append("email", email);
-            params.append("otp", otpCode);
-            router.push(`/reset-password?${params.toString()}`);
-          },
-          onError(ctx) {
-            handleOtpError(ctx, "FORGET_PASSWORD");
-          },
-        },
-      );
-    }
-  };
-
   const updateUser = async ({
     name,
     email,
@@ -288,7 +200,7 @@ export function AegisProvider({ children }: { children: React.ReactNode }) {
               return authClient.changeEmail(
                 {
                   newEmail: email,
-                  callbackURL: `/verify-otp/change-email?email=${email}`,
+                  callbackURL: `/verify-email?email=${email}`,
                 },
                 {
                   onSuccess() {},
@@ -327,7 +239,6 @@ export function AegisProvider({ children }: { children: React.ReactNode }) {
         signInSocial,
         signUpCredential,
         signInCredential,
-        emailOtp,
         updateUser,
       }}
     >

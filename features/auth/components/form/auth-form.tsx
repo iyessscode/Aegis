@@ -39,6 +39,7 @@ export const AuthForm = ({ type }: Props) => {
       await signInCredential({
         email,
         password,
+        callbackURL: "/welcome",
       });
     } else {
       const { name, email, password } = form.getValues() as SignUp;
@@ -46,6 +47,7 @@ export const AuthForm = ({ type }: Props) => {
         name,
         email,
         password,
+        callbackURL: "/welcome",
       });
     }
   };
