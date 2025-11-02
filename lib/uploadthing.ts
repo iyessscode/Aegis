@@ -1,4 +1,6 @@
 import { auth } from "@/config/auth/server";
+import { uploadthing } from "@/config/uploadthing";
+import { headers } from "next/headers";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 
@@ -19,26 +21,31 @@ export const customFileRouter = {
     .middleware(async ({ req }) => {
       const currentUser = await getCurrentUser(req);
 
-      if (!currentUser?.session.token)
+      if (!currentUser?.session.token) {
+        console.log("CURRENT USER DOES NOT EXISTS");
+
         throw new UploadThingError("Unauthorized");
-
-      return { userId: currentUser.user.id };
-    })
-    .onUploadComplete(async ({ metadata, file }) => {
-      await auth.api.updateUser({
-        body: {
-          image: file.ufsUrl,
-        },
-      });
-      console.log("Upload complete for userId:", metadata.userId);
-
-      console.log("file url: ", file.ufsUrl);
-      console.log("file key: ", file.key);
+      }
 
       return {
-        uploadedBy: metadata.userId,
-        message: "File uploaded successfully",
+        userId: currentUser.user.id,
+        imageKey: currentUser.user.image_key,
       };
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      try {
+        if (metadata.imageKey) {
+          await uploadthing.deleteFiles(metadata.imageKey);
+        }
+        return {
+          uploadedBy: metadata.userId,
+          fileUrl: file.ufsUrl,
+          message: "File uploaded and user updated",
+        };
+      } catch (err) {
+        console.error("Failed to update user after upload:", err);
+        throw new UploadThingError("Failed to update user image");
+      }
     }),
 } satisfies FileRouter;
 

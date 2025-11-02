@@ -1,8 +1,9 @@
 "use client";
 
+import { User } from "better-auth";
 import { ErrorContext } from "better-auth/react";
 import { useRouter } from "next/navigation";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { authClient } from "@/config/auth/client";
@@ -12,7 +13,6 @@ import { useLoadingStore } from "@/store/use-loading-store";
 
 import { DialogProfile } from "@/features/modals/dialog-profile";
 import { DialogSecurity } from "@/features/modals/dialog-security";
-import { User } from "better-auth";
 
 type SignInCredentialParams = {
   email: string;

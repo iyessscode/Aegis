@@ -1,18 +1,23 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import z from "zod";
+
+import { authClient } from "@/config/auth/client";
+import { cn } from "@/lib/utils";
+
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { FieldGroup, FieldSet } from "@/components/ui/field";
-import { authClient } from "@/config/auth/client";
-import { useAppForm } from "@/features/form/hooks/form-hook";
-import { cn } from "@/lib/utils";
+
 import { useEditStore } from "@/store/use-edit-store";
 import { useModalStore } from "@/store/use-modal-store";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { toast } from "sonner";
-import z from "zod";
-import { UserAvatar } from "../user-avatar";
+
+import { useAppForm } from "@/features/form/hooks/form-hook";
+import { useUploadThing } from "@/features/uploadthing/hooks/use-uploadthing";
+import { UserAvatar } from "@/features/user/components/user-avatar";
 
 const userProfileSchema = z.object({
   name: z.string().min(3, "Name musut be at least 3 characters long"),
@@ -24,6 +29,17 @@ type UserProfile = z.infer<typeof userProfileSchema>;
 
 export default function UserProfileForm({ name, email, image }: UserProfile) {
   const router = useRouter();
+  const [file, setFile] = useState<File | null>(null);
+
+  const { startUpload, isUploading } = useUploadThing("imageUploader", {
+    onUploadError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const { toggleEdit, isEditing, setEditing } = useEditStore();
+  const isDialogOpen = useModalStore((state) => state.openDialogProfile);
+
   const form = useAppForm({
     defaultValues: {
       name,
@@ -34,49 +50,43 @@ export default function UserProfileForm({ name, email, image }: UserProfile) {
       onSubmit: userProfileSchema,
     },
     onSubmit: async ({ value }) => {
-      const promises = [
-        authClient.updateUser({
-          name: value.name,
-          image: value.image,
-        }),
-      ];
-
-      if (value.email != email) {
-        promises.push(
-          authClient.changeEmail({
-            newEmail: value.email,
-            callbackURL: "/welcome",
-          }),
-        );
+      let uploadedKey;
+      if (file) {
+        const res = await startUpload([file]);
+        uploadedKey = res?.[0].key;
+        form.setFieldValue("image", res?.[0].ufsUrl ?? null);
       }
 
-      const res = await Promise.all(promises);
-      const updateUserResult = res[0];
-      const emailResult = res[1] ?? { error: false };
+      const results = await Promise.all([
+        authClient.updateUser({
+          name: value.name,
+          image: form.getFieldValue("image"),
+          image_key: uploadedKey,
+        }),
+        value.email !== email
+          ? authClient.changeEmail({
+              newEmail: value.email,
+              callbackURL: "/welcome",
+            })
+          : Promise.resolve({ error: false }),
+      ]);
 
-      if (updateUserResult.error) {
-        toast.error(updateUserResult.error.message);
-      } else if (emailResult.error) {
+      const [updateResult, emailResult] = results;
+
+      if (updateResult.error) toast.error(updateResult.error.message);
+      if (emailResult.error && typeof emailResult.error != "boolean")
         toast.error(emailResult.error.message);
+
+      if (value.email !== email) {
+        toast.success("Verify your new email address to complete the change.");
       } else {
-        if (value.email !== email) {
-          toast.success(
-            "Verify your new email address to complete the change.",
-          );
-        } else {
-          toast.success("Profile updated successfully");
-        }
+        toast.success("Profile updated successfully");
       }
 
       router.refresh();
       setEditing(false);
     },
   });
-
-  const toggleEdit = useEditStore((state) => state.toggleEdit);
-  const isEditing = useEditStore((state) => state.isEditing);
-  const setEditing = useEditStore((state) => state.setEditing);
-  const isDialogOpen = useModalStore((state) => state.openDialogProfile);
 
   useEffect(() => {
     if (!isDialogOpen) {
@@ -100,6 +110,7 @@ export default function UserProfileForm({ name, email, image }: UserProfile) {
             name={name}
             image={image}
             isEditing={isEditing}
+            onFileChange={setFile}
           />
 
           <form.AppField name="name">
@@ -135,7 +146,7 @@ export default function UserProfileForm({ name, email, image }: UserProfile) {
             <Button
               type="submit"
               className={cn(!isEditing && "hidden")}
-              disabled={form.state.isSubmitting}
+              disabled={form.state.isSubmitting || isUploading}
             >
               Save change
             </Button>
