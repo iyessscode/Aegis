@@ -29,7 +29,6 @@ type SignInSocialParams = {
   callbackURL: string;
 };
 
-export type OTPPurpose = "change-email" | "sign-up";
 
 type UpdateUserParams = {
   name: string;
