@@ -35,6 +35,13 @@ type OTPParams = {
   type: SubjectType;
 };
 
+type UpdateUserParams = {
+  name: string;
+  email: string;
+  image: string | null;
+  imageKey: string | null;
+};
+
 type AegisContextType = {
   // States
   isLoading: {
@@ -48,6 +55,7 @@ type AegisContextType = {
   signUpCredential: (params: SignUpCredentialParams) => Promise<void>;
   signInSocial: (params: SignInSocialParams) => Promise<void>;
   emailOtp: (params: OTPParams) => Promise<void>;
+  updateUser: (params: UpdateUserParams) => Promise<void>;
 };
 
 const AegisContext = createContext<AegisContextType | undefined>(undefined);
@@ -58,8 +66,12 @@ export function AegisProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      const { data } = await authClient.getSession();
-      setUser(data?.user ?? null);
+      try {
+        const { data } = await authClient.getSession();
+        setUser(data?.user ?? null);
+      } catch {
+        setUser(null);
+      }
     })();
   }, []);
 
@@ -243,6 +255,52 @@ export function AegisProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateUser = async ({
+    name,
+    email,
+    image,
+    imageKey,
+  }: UpdateUserParams) => {
+    try {
+      const results = await Promise.all([
+        authClient.updateUser({
+          name,
+          image,
+          image_key: imageKey,
+        }),
+        email !== user?.email
+          ? (() => {
+              const params = new URLSearchParams({
+                email,
+                type: "email-verification",
+              });
+
+              return authClient.changeEmail({
+                newEmail: email,
+                callbackURL: `/verify-otp?${params.toString()}`,
+              });
+            })()
+          : Promise.resolve({ error: false }),
+      ]);
+
+      const [updateResult, emailResult] = results;
+      if (updateResult.error) toast.error(updateResult.error.message);
+      if (emailResult.error && typeof emailResult.error != "boolean")
+        toast.error(emailResult.error.message);
+
+      if (user?.email !== email) {
+        toast.success("Verify your new email address to complete the change.");
+      } else {
+        toast.success("Profile updated successfully");
+      }
+
+      router.refresh();
+    } catch (error) {
+      console.log("ERROR_UPDATE_USER: ", error);
+      toast.error("An error occurred while updating the profile.");
+    }
+  };
+
   return (
     <AegisContext.Provider
       value={{
@@ -252,6 +310,7 @@ export function AegisProvider({ children }: { children: React.ReactNode }) {
         signUpCredential,
         signInCredential,
         emailOtp,
+        updateUser,
       }}
     >
       <DialogProfile />

@@ -7,11 +7,14 @@ type Props = {
 };
 
 export default async function ProtectedLayout({ children }: Props) {
-  const session = await auth.api.getSession({
-    headers: await getHeaders(),
-  });
-
-  if (session == null) return redirect("/sign-in");
+  await auth.api
+    .getSession({
+      headers: await getHeaders(),
+    })
+    .then((res) => {
+      if (!res?.session.token || !res?.user.emailVerified)
+        return redirect("/sign-in");
+    });
 
   return children;
 }

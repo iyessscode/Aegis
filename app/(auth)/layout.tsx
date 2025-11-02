@@ -15,7 +15,8 @@ export default function AuthLayout({ children }: Props) {
 
   useEffect(() => {
     authClient.getSession().then((session) => {
-      if (session?.data != null) router.push("/welcome");
+      if (session?.data != null && session?.data.user.emailVerified)
+        router.push("/welcome");
     });
   }, [router]);
 

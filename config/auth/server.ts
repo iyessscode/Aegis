@@ -29,6 +29,12 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: true,
   },
+  emailVerification: {
+    autoSignInAfterVerification: true,
+    sendOnSignUp: true,
+    sendOnSignIn: true,
+    expiresIn: 60 * 15, // 15 minutes
+  },
   socialProviders: {
     google: {
       clientId: env.GOOGLE_CLIENT_ID,
@@ -54,24 +60,16 @@ export const auth = betterAuth({
     },
     changeEmail: {
       enabled: true,
-
-      sendChangeEmailVerification: async (
-        { user, newEmail, url, token },
-        request,
-      ) => {
-        console.log({ user });
-        console.log({ newEmail });
+      sendChangeEmailVerification: async ({ user, url }) => {
         console.log({ url });
-        console.log({ token });
-        console.log({ request });
         await resend.emails.send({
           from: env.RESEND_SENDER_EMAIL,
-          to: newEmail,
-          subject: "Verify New Email Address",
+          to: user.email,
+          subject: "Approve Email Change",
           react: ChangeEmailVerification({
             username: user.name,
             verificationUrl: url,
-            expireMinutes: 10,
+            expireMinutes: 15,
           }),
         });
       },
@@ -83,6 +81,8 @@ export const auth = betterAuth({
       otpLength: 6,
       expiresIn: 300,
       sendVerificationOnSignUp: true,
+      allowedAttempts: 10,
+      overrideDefaultEmailVerification: true,
       async sendVerificationOTP({ email, otp, type }) {
         await resend.emails.send({
           from: env.RESEND_SENDER_EMAIL,
@@ -91,7 +91,7 @@ export const auth = betterAuth({
           react: OTPEmail({
             otpCode: otp,
             purpose: type,
-            expiryMinutes: "5",
+            expiryMinutes: "15",
           }),
         });
       },

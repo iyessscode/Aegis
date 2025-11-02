@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
 
-import { authClient } from "@/config/auth/client";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
@@ -18,6 +17,7 @@ import { useModalStore } from "@/store/use-modal-store";
 import { useAppForm } from "@/features/form/hooks/form-hook";
 import { useUploadThing } from "@/features/uploadthing/hooks/use-uploadthing";
 import { UserAvatar } from "@/features/user/components/user-avatar";
+import { useAegis } from "@/providers/aegis-provider";
 
 const userProfileSchema = z.object({
   name: z.string().min(3, "Name musut be at least 3 characters long"),
@@ -29,6 +29,7 @@ type UserProfile = z.infer<typeof userProfileSchema>;
 
 export default function UserProfileForm({ name, email, image }: UserProfile) {
   const router = useRouter();
+  const { updateUser } = useAegis();
   const [file, setFile] = useState<File | null>(null);
 
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
@@ -57,34 +58,15 @@ export default function UserProfileForm({ name, email, image }: UserProfile) {
         form.setFieldValue("image", res?.[0].ufsUrl ?? null);
       }
 
-      const results = await Promise.all([
-        authClient.updateUser({
-          name: value.name,
-          image: form.getFieldValue("image"),
-          image_key: uploadedKey,
-        }),
-        value.email !== email
-          ? authClient.changeEmail({
-              newEmail: value.email,
-              callbackURL: "/welcome",
-            })
-          : Promise.resolve({ error: false }),
-      ]);
-
-      const [updateResult, emailResult] = results;
-
-      if (updateResult.error) toast.error(updateResult.error.message);
-      if (emailResult.error && typeof emailResult.error != "boolean")
-        toast.error(emailResult.error.message);
-
-      if (value.email !== email) {
-        toast.success("Verify your new email address to complete the change.");
-      } else {
-        toast.success("Profile updated successfully");
-      }
-
-      router.refresh();
-      setEditing(false);
+      await updateUser({
+        name: value.name,
+        email: value.email,
+        image: form.getFieldValue("image"),
+        imageKey: uploadedKey || null,
+      }).then(() => {
+        router.refresh();
+        setEditing(false);
+      });
     },
   });
 
