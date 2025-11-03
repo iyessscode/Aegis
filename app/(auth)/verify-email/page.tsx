@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { Button } from "@/components/ui/button";
+
 import { AuthContainer } from "@/features/auth/components/auth-container";
 
 type Props = {
@@ -10,19 +12,14 @@ type Props = {
   }>;
 };
 
-export default async function VerifyEmail({ searchParams }: Props) {
-  const { email, type } = await searchParams;
-
+export default function VerifyEmail({ searchParams }: Props) {
   return (
     <AuthContainer
       title="Check your inbox"
       description={
-        <>
-          We've sent you a{" "}
-          {type === "reset-password" ? "password reset" : "verification"} email
-          to <strong>{email}</strong>. <br />
-          Please follow the instructions in the email to proceed.
-        </>
+        <Suspense>
+          <CachedComponent searchParams={searchParams} />
+        </Suspense>
       }
       content={
         <div className="grid place-items-center">
@@ -35,3 +32,16 @@ export default async function VerifyEmail({ searchParams }: Props) {
     />
   );
 }
+
+const CachedComponent = async ({ searchParams }: Props) => {
+  const { email, type } = await searchParams;
+
+  return (
+    <>
+      We've sent you a{" "}
+      {type === "reset-password" ? "password reset" : "verification"} email to{" "}
+      <strong>{email}</strong>. <br />
+      Please follow the instructions in the email to proceed.
+    </>
+  );
+};
