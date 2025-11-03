@@ -10,6 +10,7 @@ import { resend } from "@/config/resend";
 
 import * as schema from "@/db/schema";
 
+import ChangeEmailVerification from "@/features/email/components/change-email";
 import SendEmail from "@/features/email/components/send-email";
 
 export const auth = betterAuth({
@@ -84,6 +85,18 @@ export const auth = betterAuth({
     },
     changeEmail: {
       enabled: true,
+      async sendChangeEmailVerification({ user, url }) {
+        console.log({ url });
+        await resend.emails.send({
+          from: env.RESEND_SENDER_EMAIL,
+          to: user.email,
+          subject: "Approve email change",
+          react: ChangeEmailVerification({
+            username: user.name,
+            verificationUrl: url,
+          }),
+        });
+      },
     },
     plugins: [nextCookies()],
   },

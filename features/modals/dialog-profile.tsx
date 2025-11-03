@@ -1,29 +1,26 @@
-"use client";
-
-import { useAegis } from "@/providers/aegis-provider";
 import { useEditStore } from "@/store/use-edit-store";
 import { useModalStore } from "@/store/use-modal-store";
 
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 
+import { authClient } from "@/config/auth/client";
+import ButtonEdit from "@/features/modals/components/button-edit";
 import UserProfileForm from "@/features/user/components/form/user-profile-form";
 
 export const DialogProfile = () => {
-  const { user } = useAegis();
+  const { data, refetch } = authClient.useSession();
+
   const open = useModalStore((state) => state.openDialogProfile);
   const onOpenChange = useModalStore((state) => state.toggleDialogProfile);
-  const toggleEdit = useEditStore((state) => state.toggleEdit);
   const isEditing = useEditStore((state) => state.isEditing);
 
-  if (user === null) return null;
+  if (data === null) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -37,15 +34,13 @@ export const DialogProfile = () => {
           </DialogDescription>
         </DialogHeader>
         <UserProfileForm
-          image={user.image ?? null}
-          name={user.name}
-          email={user.email}
+          image={data.user.image ?? null}
+          name={data.user.name}
+          email={data.user.email}
+          refetch={refetch}
         />
-        {!isEditing && (
-          <DialogFooter>
-            <Button onClick={toggleEdit}>Edit Profile</Button>
-          </DialogFooter>
-        )}
+
+        <ButtonEdit>Edit Profile</ButtonEdit>
       </DialogContent>
     </Dialog>
   );
