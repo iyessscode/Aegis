@@ -6,12 +6,12 @@ import { LoaderIcon } from "lucide-react";
 
 import { authClient } from "@/config/auth/client";
 import { SocialProviders, socialProviders } from "@/lib/providers";
-import { useLoadingStore } from "@/store/use-loading-store";
+import { useAuthLoadingStore } from "@/store/use-auth-loading-store";
 
 import { Button } from "@/components/ui/button";
 
 export const SocialAuth = () => {
-  const { loading, setLoading, clearLoading } = useLoadingStore();
+  const { loading, setLoading, clearLoading } = useAuthLoadingStore();
 
   const signInSocial = async ({
     provider,

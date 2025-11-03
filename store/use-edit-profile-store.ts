@@ -11,7 +11,7 @@ type Actions = {
   setEditing: (isEditing: boolean) => void;
 };
 
-export const useEditStore = create<States & Actions>()((set) => ({
+export const useEditProfileStore = create<States & Actions>()((set) => ({
   isEditing: false,
 
   toggleEdit: () => {

@@ -13,7 +13,7 @@ type LoadingStore = {
   clearLoading: () => void;
 };
 
-export const useLoadingStore = create<LoadingStore>((set) => ({
+export const useAuthLoadingStore = create<LoadingStore>((set) => ({
   loading: {
     global: false,
     provider: null,
