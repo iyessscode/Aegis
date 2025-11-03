@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { FieldGroup, FieldSet } from "@/components/ui/field";
 
-import { useEditStore } from "@/store/use-edit-store";
+import { useEditProfileStore } from "@/store/use-edit-profile-store";
 import { useModalStore } from "@/store/use-modal-store";
 
 import { useAppForm } from "@/features/form/hooks/form-hook";
@@ -46,7 +46,7 @@ export default function UserProfileForm({
     },
   });
 
-  const { toggleEdit, isEditing, setEditing } = useEditStore();
+  const { toggleEdit, isEditing, setEditing } = useEditProfileStore();
   const isDialogOpen = useModalStore((state) => state.openDialogProfile);
 
   const form = useAppForm({

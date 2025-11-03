@@ -1,4 +1,4 @@
-import { useEditStore } from "@/store/use-edit-store";
+import { useEditProfileStore } from "@/store/use-edit-profile-store";
 import { useModalStore } from "@/store/use-modal-store";
 
 import {
@@ -18,7 +18,7 @@ export const DialogProfile = () => {
 
   const open = useModalStore((state) => state.openDialogProfile);
   const onOpenChange = useModalStore((state) => state.toggleDialogProfile);
-  const isEditing = useEditStore((state) => state.isEditing);
+  const isEditing = useEditProfileStore((state) => state.isEditing);
 
   if (data === null) return null;
 

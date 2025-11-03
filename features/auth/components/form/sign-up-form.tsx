@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import z from "zod";
 
 import { authClient } from "@/config/auth/client";
-import { useLoadingStore } from "@/store/use-loading-store";
+import { useAuthLoadingStore } from "@/store/use-auth-loading-store";
 
 import { LoadingSwap } from "@/components/loading-swap";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ import { useAppForm } from "@/features/form/hooks/form-hook";
 
 export default function SignUpForm() {
   const router = useRouter();
-  const { loading, setLoading, clearLoading } = useLoadingStore();
+  const { loading, setLoading, clearLoading } = useAuthLoadingStore();
 
   const form = useAppForm({
     defaultValues: {
