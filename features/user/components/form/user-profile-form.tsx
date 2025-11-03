@@ -1,12 +1,13 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
 
+import { authClient } from "@/config/auth/client";
 import { cn } from "@/lib/utils";
 
+import { LoadingSwap } from "@/components/loading-swap";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { FieldGroup, FieldSet } from "@/components/ui/field";
@@ -17,7 +18,6 @@ import { useModalStore } from "@/store/use-modal-store";
 import { useAppForm } from "@/features/form/hooks/form-hook";
 import { useUploadThing } from "@/features/uploadthing/hooks/use-uploadthing";
 import { UserAvatar } from "@/features/user/components/user-avatar";
-import { useAegis } from "@/providers/aegis-provider";
 
 const userProfileSchema = z.object({
   name: z.string().min(3, "Name musut be at least 3 characters long"),
@@ -27,10 +27,18 @@ const userProfileSchema = z.object({
 
 type UserProfile = z.infer<typeof userProfileSchema>;
 
-export default function UserProfileForm({ name, email, image }: UserProfile) {
-  const router = useRouter();
-  const { updateUser } = useAegis();
+type Props = UserProfile & {
+  refetch: () => void;
+};
+
+export default function UserProfileForm({
+  name,
+  email,
+  image,
+  refetch,
+}: Props) {
   const [file, setFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
     onUploadError: (error) => {
@@ -52,21 +60,59 @@ export default function UserProfileForm({ name, email, image }: UserProfile) {
     },
     onSubmit: async ({ value }) => {
       let uploadedKey;
-      if (file) {
-        const res = await startUpload([file]);
-        uploadedKey = res?.[0].key;
-        form.setFieldValue("image", res?.[0].ufsUrl ?? null);
-      }
 
-      await updateUser({
-        name: value.name,
-        email: value.email,
-        image: form.getFieldValue("image"),
-        imageKey: uploadedKey || null,
-      }).then(() => {
-        router.refresh();
+      try {
+        setIsLoading(true);
+        if (file) {
+          const res = await startUpload([file]);
+          uploadedKey = res?.[0].key;
+          form.setFieldValue("image", res?.[0].ufsUrl ?? null);
+        }
+
+        const results = await Promise.all([
+          authClient.updateUser({
+            name: value.name,
+            image: value.image,
+            image_key: uploadedKey,
+          }),
+          email !== value.email
+            ? (() => {
+                return authClient.changeEmail(
+                  {
+                    newEmail: value.email,
+                    callbackURL: `/verify-email?email=${value.email}`,
+                  },
+                  {
+                    onSuccess() {},
+                    onError(ctx) {
+                      console.log("ERROR_CHANGE_EMAIL: ", ctx.error);
+                    },
+                  },
+                );
+              })()
+            : Promise.resolve({ error: false }),
+        ]);
+
+        const [updateResult, emailResult] = results;
+
+        if (updateResult.error) {
+          toast.error(updateResult.error.message);
+        } else if (emailResult.error && typeof emailResult.error != "boolean") {
+          toast.error(emailResult.error.message);
+        } else if (email !== value.email) {
+          toast.success(
+            "Verify your new email address to complete the change.",
+          );
+        } else {
+          toast.success("Profile updated successfully");
+        }
         setEditing(false);
-      });
+        refetch();
+      } catch {
+        toast.error("An error occurred while updating the profile.");
+      } finally {
+        setIsLoading(false);
+      }
     },
   });
 
@@ -122,15 +168,16 @@ export default function UserProfileForm({ name, email, image }: UserProfile) {
                 toggleEdit();
               }}
               className={cn(!isEditing && "hidden")}
+              disabled={isLoading}
             >
-              Cancle
+              Cancel
             </Button>
             <Button
               type="submit"
               className={cn(!isEditing && "hidden")}
-              disabled={form.state.isSubmitting || isUploading}
+              disabled={isLoading}
             >
-              Save change
+              <LoadingSwap isLoading={isLoading}>Save change</LoadingSwap>
             </Button>
           </DialogFooter>
         </FieldSet>
