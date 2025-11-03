@@ -1,8 +1,11 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import z from "zod";
 
-import { useAegis } from "@/providers/aegis-provider";
+import { authClient } from "@/config/auth/client";
+import { useLoadingStore } from "@/store/use-loading-store";
 
 import { LoadingSwap } from "@/components/loading-swap";
 import { Button } from "@/components/ui/button";
@@ -11,7 +14,9 @@ import { FieldGroup, FieldSet } from "@/components/ui/field";
 import { useAppForm } from "@/features/form/hooks/form-hook";
 
 export default function SignInForm() {
-  const { signInCredential, isLoading } = useAegis();
+  const router = useRouter();
+
+  const { loading, setLoading, clearLoading } = useLoadingStore();
 
   const form = useAppForm({
     defaultValues: {
@@ -27,11 +32,50 @@ export default function SignInForm() {
       }),
     },
     onSubmit: async ({ value }) => {
-      await signInCredential({
-        email: value.email,
-        password: value.password,
-        callbackURL: "/welcome",
-      });
+      await authClient.signIn.email(
+        {
+          email: value.email,
+          password: value.password,
+          callbackURL: "/welcome",
+        },
+        {
+          onRequest: () => setLoading("credential"),
+          onResponse: clearLoading,
+          onSuccess(ctx) {
+            toast.success(`Welcome, ${ctx.data.user.name}!`);
+          },
+          async onError(ctx) {
+            if (ctx.error.code === "EMAIL_NOT_VERIFIED") {
+              await authClient.sendVerificationEmail(
+                {
+                  email: value.email,
+                  callbackURL: "/welcome",
+                },
+                {
+                  onError(ctx) {
+                    console.log(
+                      "ERROR_SIGN_IN_CREDENTIAL_SEND_VERIFICATION_SIGN_IN: ",
+                      ctx.error,
+                    );
+                    toast.error(ctx.error.message);
+                  },
+                },
+              );
+
+              const params = new URLSearchParams({
+                email: value.email,
+              });
+
+              toast.success(
+                "Please check your email for the verification code",
+              );
+              router.push(`/verify-email?${params.toString()}`);
+            } else {
+              toast.error(ctx.error.message);
+            }
+          },
+        },
+      );
     },
   });
   return (
@@ -49,7 +93,7 @@ export default function SignInForm() {
               <field.InputText
                 label="Email address"
                 placeholder="Enter your email address"
-                disabled={isLoading.global}
+                disabled={loading.global}
               />
             )}
           </form.AppField>
@@ -59,7 +103,7 @@ export default function SignInForm() {
                 label="Password"
                 placeholder="Enter your password"
                 linkForgetPassword="/forget-password"
-                disabled={isLoading.global}
+                disabled={loading.global}
               />
             )}
           </form.AppField>
@@ -67,11 +111,11 @@ export default function SignInForm() {
         <Button
           type="submit"
           size="lg"
-          disabled={isLoading.global}
+          disabled={loading.global}
           className="w-full"
         >
           <LoadingSwap
-            isLoading={isLoading.global && isLoading.provider === "credential"}
+            isLoading={loading.global && loading.provider === "credential"}
           >
             Continue
           </LoadingSwap>

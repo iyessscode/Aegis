@@ -8,6 +8,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 
+import { Button } from "@/components/ui/button";
 import { useFieldContext } from "@/features/form/hooks/form-hook";
 
 export type FormControlProps = {
@@ -31,6 +32,7 @@ export default function FormBase({
   horizontal,
   controlFirst,
   linkForgetPassword,
+  disabled,
 }: FormBaseProps) {
   const field = useFieldContext();
 
@@ -41,12 +43,14 @@ export default function FormBase({
       <div className="flex flex-row">
         <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
         {linkForgetPassword && (
-          <Link
-            href={linkForgetPassword}
-            className="text-muted-foreground hover:text-foreground ml-auto text-sm"
+          <Button
+            variant="link"
+            disabled={disabled}
+            className="text-muted-foreground hover:text-foreground ml-auto h-fit py-0 text-sm"
+            asChild
           >
-            Forget your password?
-          </Link>
+            <Link href={linkForgetPassword}>Forget your password?</Link>
+          </Button>
         )}
       </div>
       {description && <FieldDescription>{description}</FieldDescription>}

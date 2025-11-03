@@ -47,6 +47,7 @@ export default function PasswordField(props: PasswordFieldProps) {
             title={field.name}
             aria-label={field.name}
             size="icon-xs"
+            className="mr-2"
             onClick={toggleVisible}
             disabled={props.disabled}
           >

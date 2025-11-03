@@ -1,4 +1,5 @@
 import { FieldSeparator } from "@/components/ui/field";
+
 import { SocialAuth } from "@/features/auth/components/social-auth";
 
 type AuthContainerProps = {

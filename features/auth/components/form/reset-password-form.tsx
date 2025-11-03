@@ -1,14 +1,17 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 import z from "zod";
 
+import { authClient } from "@/config/auth/client";
+
+import { LoadingSwap } from "@/components/loading-swap";
 import { Button } from "@/components/ui/button";
 import { FieldGroup, FieldSet } from "@/components/ui/field";
 
-import { authClient } from "@/config/auth/client";
 import { useAppForm } from "@/features/form/hooks/form-hook";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 type Props = {
   token: string;
@@ -16,6 +19,7 @@ type Props = {
 
 export default function ResetPasswordForm({ token }: Props) {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useAppForm({
     defaultValues: {
@@ -42,6 +46,8 @@ export default function ResetPasswordForm({ token }: Props) {
           token,
         },
         {
+          onRequest: () => setIsLoading(true),
+          onResponse: () => setIsLoading(false),
           onSuccess() {
             toast.success("Password has been reset successfully");
             router.push("/sign-in");
@@ -64,13 +70,22 @@ export default function ResetPasswordForm({ token }: Props) {
       <FieldGroup>
         <FieldSet>
           <form.AppField name="password">
-            {(field) => <field.InputPassword label="New Password" />}
+            {(field) => (
+              <field.InputPassword label="New Password" disabled={isLoading} />
+            )}
           </form.AppField>
           <form.AppField name="confirmPassword">
-            {(field) => <field.InputPassword label="Confirm Password" />}
+            {(field) => (
+              <field.InputPassword
+                label="Confirm Password"
+                disabled={isLoading}
+              />
+            )}
           </form.AppField>
         </FieldSet>
-        <Button type="submit">Reset Password</Button>
+        <Button type="submit" disabled={isLoading}>
+          <LoadingSwap isLoading={isLoading}>Reset Password</LoadingSwap>
+        </Button>
       </FieldGroup>
     </form>
   );

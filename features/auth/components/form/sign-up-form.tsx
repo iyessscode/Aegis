@@ -1,8 +1,11 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import z from "zod";
 
-import { useAegis } from "@/providers/aegis-provider";
+import { authClient } from "@/config/auth/client";
+import { useLoadingStore } from "@/store/use-loading-store";
 
 import { LoadingSwap } from "@/components/loading-swap";
 import { Button } from "@/components/ui/button";
@@ -11,7 +14,8 @@ import { FieldGroup, FieldSet } from "@/components/ui/field";
 import { useAppForm } from "@/features/form/hooks/form-hook";
 
 export default function SignUpForm() {
-  const { signUpCredential, isLoading } = useAegis();
+  const router = useRouter();
+  const { loading, setLoading, clearLoading } = useLoadingStore();
 
   const form = useAppForm({
     defaultValues: {
@@ -29,12 +33,29 @@ export default function SignUpForm() {
       }),
     },
     onSubmit: async ({ value }) => {
-      await signUpCredential({
-        name: value.name,
-        email: value.email,
-        password: value.password,
-        callbackURL: "/welcome",
-      });
+      await authClient.signUp.email(
+        {
+          name: value.name,
+          email: value.email,
+          password: value.password,
+          callbackURL: "/welcome",
+        },
+        {
+          onRequest: () => setLoading("credential"),
+          onResponse: clearLoading,
+          onSuccess() {
+            const params = new URLSearchParams({
+              email: value.email,
+            });
+
+            toast.success("Welcome. Please verify your email address!");
+            router.push(`/verify-email?${params.toString()}`);
+          },
+          onError(ctx) {
+            toast.error(ctx.error.message);
+          },
+        },
+      );
     },
   });
   return (
@@ -52,7 +73,7 @@ export default function SignUpForm() {
               <field.InputText
                 label="Name"
                 placeholder="Enter your name"
-                disabled={isLoading.global}
+                disabled={loading.global}
               />
             )}
           </form.AppField>
@@ -61,7 +82,7 @@ export default function SignUpForm() {
               <field.InputText
                 label="Email address"
                 placeholder="Enter your email address"
-                disabled={isLoading.global}
+                disabled={loading.global}
               />
             )}
           </form.AppField>
@@ -70,8 +91,7 @@ export default function SignUpForm() {
               <field.InputPassword
                 label="Password"
                 placeholder="Enter your password"
-                linkForgetPassword="/forget-password"
-                disabled={isLoading.global}
+                disabled={loading.global}
               />
             )}
           </form.AppField>
@@ -79,11 +99,11 @@ export default function SignUpForm() {
         <Button
           type="submit"
           size="lg"
-          disabled={isLoading.global}
+          disabled={loading.global}
           className="w-full"
         >
           <LoadingSwap
-            isLoading={isLoading.global && isLoading.provider === "credential"}
+            isLoading={loading.global && loading.provider === "credential"}
           >
             Continue
           </LoadingSwap>

@@ -1,18 +1,22 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 import z from "zod";
 
 import { authClient } from "@/config/auth/client";
 
+import { LoadingSwap } from "@/components/loading-swap";
 import { Button } from "@/components/ui/button";
 import { FieldSet } from "@/components/ui/field";
 
 import { useAppForm } from "@/features/form/hooks/form-hook";
-import { toast } from "sonner";
 
 export default function ForgetPasswordForm() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useAppForm({
     defaultValues: {
       email: "",
@@ -29,6 +33,8 @@ export default function ForgetPasswordForm() {
           redirectTo: "/reset-password",
         },
         {
+          onRequest: () => setIsLoading(true),
+          onResponse: () => setIsLoading(false),
           onSuccess() {
             form.reset();
             router.push(
@@ -56,16 +62,12 @@ export default function ForgetPasswordForm() {
             <field.InputText
               label="Email address"
               placeholder="Enter your email address"
-              // disabled={isLoading.global}
+              disabled={isLoading}
             />
           )}
         </form.AppField>
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={form.state.isSubmitting}
-        >
-          Send Reset Link
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          <LoadingSwap isLoading={isLoading}>Send Reset Link</LoadingSwap>
         </Button>
       </FieldSet>
     </form>
