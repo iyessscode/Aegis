@@ -20,6 +20,7 @@ export const users = authSchema.table(
     email: text("email").notNull().unique(),
     emailVerified: boolean("email_verified").default(false).notNull(),
     image: text("image"),
+    image_key: text("image_key"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()

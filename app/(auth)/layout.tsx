@@ -1,26 +1,59 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
+import { XIcon } from "lucide-react";
+
+import { authClient } from "@/config/auth/client";
+
+import { Button } from "@/components/ui/button";
 
 type Props = {
   children: React.ReactNode;
 };
 
 export default function AuthLayout({ children }: Props) {
+  const router = useRouter();
+
+  useEffect(() => {
+    authClient.getSession().then(({ data }) => {
+      if (data?.session.token != null && data?.user.emailVerified)
+        router.push("/welcome");
+    });
+  }, [router]);
+
   return (
-    <div className="mx-auto grid h-screen w-full place-items-center">
-      <div className="flex w-full max-w-7xl flex-col items-center justify-center gap-y-6">
-        <Link href="/">
-          <div className="relative mx-auto h-10 w-32 md:h-16 md:w-56">
-            <Image
-              src="./logo-text.svg"
-              alt="logo"
-              fill
-              sizes="16vw"
-              className="object-contain"
-            />
-          </div>
-        </Link>
-        <main className="w-full max-w-lg px-4">{children}</main>
+    <div className="mx-auto h-screen max-w-7xl">
+      <header className="h-16 px-4 sm:px-0">
+        <div className="flex items-center justify-between">
+          <Link href="/">
+            <div className="relative h-16 w-32">
+              <Image
+                src="./logo-text.svg"
+                alt="logo"
+                fill
+                sizes="16vw"
+                className="object-contain"
+              />
+            </div>
+          </Link>
+          <Button
+            variant="outline"
+            size="icon"
+            className="bg-muted border-none"
+            asChild
+          >
+            <Link href="/">
+              <XIcon className="text-primary" />
+            </Link>
+          </Button>
+        </div>
+      </header>
+      <div className="mx-auto grid h-[calc(100vh-4rem)] max-w-md place-items-center">
+        {children}
       </div>
     </div>
   );

@@ -1,15 +1,11 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 export default function HomePage() {
   return (
     <main className="relative grid h-screen place-items-center">
-      <div className="overflow-hidden-z-50 absolute inset-0">
-        <div className="from-primary/20 absolute top-1/2 left-1/2 -z-50 size-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-radial to-transparent blur-3xl" />
-      </div>
-
       <div className="z-50 mx-auto flex max-w-5xl flex-col items-center justify-center gap-y-2 px-4 lg:gap-y-2">
         <div className="relative mx-auto h-20 w-56 md:h-24 md:w-96">
           <Image
@@ -20,7 +16,7 @@ export default function HomePage() {
             className="object-contain"
           />
         </div>
-        <h3 className="from-primary/50 to-primary bg-linear-to-t bg-clip-text text-center text-xl font-bold text-transparent md:text-4xl">
+        <h3 className="text-primary text-center text-xl font-bold md:text-4xl">
           Protected. Verified. Aegis.
         </h3>
         <p className="text-muted-foreground mt-4 text-center text-sm md:text-base lg:mt-8">

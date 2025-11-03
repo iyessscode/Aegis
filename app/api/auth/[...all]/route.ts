@@ -87,7 +87,6 @@ const checkArcjet = async (request: NextRequest) => {
 
   const userIdOrIp = (session?.user.id ?? findIp(request)) || "127.0.0.1";
 
-  console.log("REQUEST_URL: ", request.url);
   if (request.url.endsWith("/auth/sign-up/email")) {
     console.log(
       "============================ SIGN_UP_EMAIL ============================",
