@@ -1,5 +1,3 @@
-"use client";
-
 import { Session } from "better-auth";
 import { MonitorIcon, SmartphoneIcon, TrashIcon } from "lucide-react";
 
@@ -17,6 +15,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Suspense } from "react";
+import PasswordManagement from "../user/components/security/password-management";
 
 const listSession: Session[] = [
   {
@@ -82,12 +82,9 @@ export const DialogSecurity = () => {
         </DialogHeader>
         <ScrollArea className="max-h-160 w-full px-4 md:max-h-128">
           <div className="flex flex-col gap-4">
-            <DialogActions
-              keyFeatures="Password"
-              value={"••••••••••"}
-              action={() => {}}
-              actionLabel="Update password"
-            />
+            <Suspense>
+              <PasswordManagement />
+            </Suspense>
             <DialogActions
               keyFeatures="Passkeys"
               value={null}

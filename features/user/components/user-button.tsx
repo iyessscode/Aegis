@@ -47,13 +47,7 @@ export const UserButton = () => {
   }, [data, isPending, isRefetching, router]);
 
   if (isPending || isRefetching) {
-    return (
-      <div className="flex h-14 w-60 items-center justify-center gap-2">
-        <span className="border-primary size-4 animate-bounce rounded-full border transition-transform delay-100" />
-        <span className="border-primary size-4 animate-bounce rounded-full border transition-transform delay-200" />
-        <span className="border-primary size-4 animate-bounce rounded-full border transition-transform delay-300" />
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (!data) return null;
@@ -61,8 +55,10 @@ export const UserButton = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="bg-card flex cursor-pointer items-center justify-center gap-x-4 rounded-md border px-4 focus:outline-none">
-        <UserInfo {...data.user} />
-        <ChevronRight className="size-4-" />
+        <>
+          <UserInfo {...data.user} />
+          <ChevronRight className="size-4-" />
+        </>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="linear-background max-w-80 min-w-64"
@@ -148,5 +144,15 @@ const MenuItems = ({ label, items }: MenuItemProps) => {
         </DropdownMenuItem>
       ))}
     </DropdownMenuGroup>
+  );
+};
+
+const LoadingState = () => {
+  return (
+    <div className="flex h-14 w-60 items-center justify-center gap-2">
+      <span className="border-primary size-4 animate-bounce rounded-full border transition-transform delay-100" />
+      <span className="border-primary size-4 animate-bounce rounded-full border transition-transform delay-200" />
+      <span className="border-primary size-4 animate-bounce rounded-full border transition-transform delay-300" />
+    </div>
   );
 };

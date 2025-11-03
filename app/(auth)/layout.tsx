@@ -1,13 +1,7 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 import { XIcon } from "lucide-react";
-
-import { authClient } from "@/config/auth/client";
 
 import { Button } from "@/components/ui/button";
 
@@ -16,15 +10,6 @@ type Props = {
 };
 
 export default function AuthLayout({ children }: Props) {
-  const router = useRouter();
-
-  useEffect(() => {
-    authClient.getSession().then(({ data }) => {
-      if (data?.session.token != null && data?.user.emailVerified)
-        router.push("/welcome");
-    });
-  }, [router]);
-
   return (
     <div className="mx-auto h-screen max-w-7xl">
       <header className="h-16 px-4 sm:px-0">

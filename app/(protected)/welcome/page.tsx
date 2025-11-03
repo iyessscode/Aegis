@@ -1,8 +1,9 @@
-"use client";
-
 import Image from "next/image";
 
+import { auth } from "@/config/auth/server";
 import { UserButton } from "@/features/user/components/user-button";
+import { headers as getHeaders } from "next/headers";
+import { Suspense } from "react";
 
 export default function WelcomePage() {
   return (
@@ -12,18 +13,12 @@ export default function WelcomePage() {
       </div>
 
       <div className="z-50 mx-auto flex max-w-5xl flex-col items-center justify-center gap-y-2 px-4 lg:gap-y-2">
-        <div className="relative mx-auto h-20 w-56 md:h-24 md:w-96">
-          <Image
-            src="./logo-text.svg"
-            alt="logo"
-            fill
-            sizes="30vw"
-            className="object-contain"
-          />
-        </div>
-        <h3 className="text-muted-foreground text-xl font-bold md:text-4xl">
-          Welcome
-        </h3>
+        <Suspense>
+          <Logo />
+        </Suspense>
+        <Suspense>
+          <Greeting />
+        </Suspense>
         <div className="mt-8">
           <UserButton />
         </div>
@@ -31,3 +26,36 @@ export default function WelcomePage() {
     </main>
   );
 }
+
+const Greeting = async () => {
+  const session = await auth.api.getSession({ headers: await getHeaders() });
+
+  if (session == null) return null;
+
+  return <SayWelcome name={session.user.name} />;
+};
+
+const SayWelcome = async ({ name }: { name: string }) => {
+  "use cache";
+
+  return (
+    <h3 className="text-muted-foreground text-xl font-bold md:text-4xl">
+      Welcome, <span className="text-primary">{name}</span>.
+    </h3>
+  );
+};
+
+const Logo = async () => {
+  "use cache";
+  return (
+    <div className="relative mx-auto h-20 w-56 md:h-24 md:w-96">
+      <Image
+        src="./logo-text.svg"
+        alt="logo"
+        fill
+        sizes="30vw"
+        className="object-contain"
+      />
+    </div>
+  );
+};

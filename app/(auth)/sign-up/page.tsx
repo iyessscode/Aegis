@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { AuthContainer } from "@/features/auth/components/auth-container";
 import SignUpForm from "@/features/auth/components/form/sign-up-form";
@@ -18,7 +19,11 @@ export default function SignUpPage() {
           </Link>
         </>
       }
-      content={<SignUpForm />}
+      content={
+        <Suspense>
+          <SignUpForm />
+        </Suspense>
+      }
     />
   );
 }
