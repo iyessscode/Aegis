@@ -48,7 +48,6 @@ export default function SignUpForm() {
               email: value.email,
             });
 
-            toast.success("Welcome. Please verify your email address!");
             router.push(`/verify-email?${params.toString()}`);
           },
           onError(ctx) {

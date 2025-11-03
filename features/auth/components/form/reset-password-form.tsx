@@ -49,7 +49,9 @@ export default function ResetPasswordForm({ token }: Props) {
           onRequest: () => setIsLoading(true),
           onResponse: () => setIsLoading(false),
           onSuccess() {
-            toast.success("Password has been reset successfully");
+            toast.success(
+              "Password has been reset successfully. Please sign in to continue",
+            );
             router.push("/sign-in");
           },
           onError(ctx) {

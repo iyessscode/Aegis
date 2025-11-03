@@ -53,10 +53,6 @@ export default function SignInForm() {
                 },
                 {
                   onError(ctx) {
-                    console.log(
-                      "ERROR_SIGN_IN_CREDENTIAL_SEND_VERIFICATION_SIGN_IN: ",
-                      ctx.error,
-                    );
                     toast.error(ctx.error.message);
                   },
                 },
@@ -66,9 +62,6 @@ export default function SignInForm() {
                 email: value.email,
               });
 
-              toast.success(
-                "Please check your email for the verification code",
-              );
               router.push(`/verify-email?${params.toString()}`);
             } else {
               toast.error(ctx.error.message);
