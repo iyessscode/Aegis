@@ -59,7 +59,7 @@ export default function UserUpdatePassword() {
   );
 
   return (
-    <div className="flex-1 rounded-md border p-4">
+    <div className="w-full rounded-md border p-4">
       <form
         onSubmit={(e) => {
           e.preventDefault();

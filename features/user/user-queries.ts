@@ -36,5 +36,7 @@ export const checkIfUserHasPassword = cache(async () => {
       ),
     );
 
+  if (!account) return false;
+
   return account.password != null ? true : false;
 });
