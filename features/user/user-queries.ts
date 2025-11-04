@@ -1,31 +1,40 @@
 "use server";
 
-import { eq } from "drizzle-orm";
-
-import { authClient } from "@/config/auth/client";
-import { db } from "@/config/db";
-import { accounts } from "@/db/schema";
+import { and, eq, isNotNull } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
+import { headers as nextHeaders } from "next/headers";
+import { cache } from "react";
 
-export const getCurrentUser = async () => {
-  "use cache";
-  const { data } = await authClient.getSession();
+import { accounts } from "@/db/schema";
 
-  cacheTag(`user-${data?.user.id}`);
-  cacheLife("hours");
+import { auth } from "@/config/auth/server";
+import { db } from "@/config/db";
 
-  return data?.user ?? null;
-};
+export const getCurrentUser = cache(async () => {
+  const session = await auth.api.getSession({
+    headers: await nextHeaders(),
+  });
 
-export const checkIfUserHasPassword = async () => {
+  if (session == null) return null;
+
+  return session.user;
+});
+
+export const checkIfUserHasPassword = cache(async () => {
   const user = await getCurrentUser();
 
-  if (!user) return false;
+  if (user == null) return false;
 
   const [account] = await db
     .select({ password: accounts.password })
     .from(accounts)
-    .where(eq(accounts.userId, user.id));
+    .where(
+      and(
+        eq(accounts.userId, user.id),
+        eq(accounts.providerId, "credential"),
+        isNotNull(accounts.password),
+      ),
+    );
 
   return account.password != null ? true : false;
-};
+});

@@ -2,7 +2,7 @@ import Image from "next/image";
 
 import { auth } from "@/config/auth/server";
 import { UserButton } from "@/features/user/components/user-button";
-import { headers as getHeaders } from "next/headers";
+import { getCurrentUser } from "@/features/user/user-queries";
 import { Suspense } from "react";
 
 export default function WelcomePage() {
@@ -28,11 +28,11 @@ export default function WelcomePage() {
 }
 
 const Greeting = async () => {
-  const session = await auth.api.getSession({ headers: await getHeaders() });
+  const user = await getCurrentUser();
 
-  if (session == null) return null;
+  if (user == null) return null;
 
-  return <SayWelcome name={session.user.name} />;
+  return <SayWelcome name={user.name} />;
 };
 
 const SayWelcome = async ({ name }: { name: string }) => {

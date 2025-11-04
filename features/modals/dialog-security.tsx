@@ -82,9 +82,7 @@ export const DialogSecurity = () => {
         </DialogHeader>
         <ScrollArea className="max-h-160 w-full px-4 md:max-h-128">
           <div className="flex flex-col gap-4">
-            <Suspense>
-              <PasswordManagement />
-            </Suspense>
+            <PasswordManagement />
             <DialogActions
               keyFeatures="Passkeys"
               value={null}
