@@ -100,5 +100,5 @@ export const auth = betterAuth({
       },
     },
   },
-  plugins: [nextCookies(), passkey()],
+  plugins: [nextCookies()],
 });

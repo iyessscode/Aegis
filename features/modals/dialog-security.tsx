@@ -15,9 +15,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Suspense } from "react";
-import PasskeyManagement from "../user/components/security/passkey-management";
-import PasswordManagement from "../user/components/security/password-management";
+import PasswordManagement from "./components/security/password-management";
 
 const listSession: Session[] = [
   {
@@ -84,7 +82,6 @@ export const DialogSecurity = () => {
         <ScrollArea className="max-h-160 w-full md:max-h-128">
           <div className="flex flex-col gap-4 p-4">
             <PasswordManagement />
-            <PasskeyManagement />
             <DialogActions
               keyFeatures="Two FA"
               value={null}

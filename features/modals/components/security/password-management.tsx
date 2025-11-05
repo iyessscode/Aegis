@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 
 import { useSecurityStore } from "@/store/use-security-store";
 
-import UserSetPassword from "@/features/user/components/form/user-set-password";
-import UserUpdatePassword from "@/features/user/components/form/user-update-password";
-import ButtonPassword from "@/features/user/components/security/components/button-password";
+import UserSetPassword from "@/features/modals/components/form/user-set-password";
+import UserUpdatePassword from "@/features/modals/components/form/user-update-password";
+import ButtonPassword from "@/features/modals/components/action-button/button-password";
 import { checkIfUserHasPassword } from "@/features/user/user-queries";
 import { cn } from "@/lib/utils";
 import UserSettingLayout from "../form/user-setting-layout";

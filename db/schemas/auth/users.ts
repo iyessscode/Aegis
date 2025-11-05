@@ -10,7 +10,6 @@ import {
 
 import { accounts } from "@/db/schemas/auth/accounts";
 import { authSchema } from "@/db/schemas/auth/auth-schema";
-import { passkeys } from "@/db/schemas/auth/passkeys";
 import { sessions } from "@/db/schemas/auth/sessions";
 
 export const users = authSchema.table(
@@ -38,5 +37,4 @@ export const users = authSchema.table(
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
-  passkeys: many(passkeys),
 }));

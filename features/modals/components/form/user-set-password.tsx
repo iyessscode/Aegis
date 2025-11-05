@@ -1,39 +1,47 @@
 "use client";
 
+import { toast } from "sonner";
 import z from "zod";
+
+import { auth } from "@/config/auth/server";
 
 import { Button } from "@/components/ui/button";
 import { FieldGroup, FieldSet } from "@/components/ui/field";
-import { useAppForm } from "@/features/form/hooks/form-hook";
+
 import { useSecurityStore } from "@/store/use-security-store";
 
-export default function UserSetPasskey() {
-  const toggleSetPasskey = useSecurityStore((state) => state.toggleSetPasskey);
+import { useAppForm } from "@/features/form/hooks/form-hook";
+import { setPassword } from "../../../user/actions";
 
+export default function UserSetPassword() {
   const form = useAppForm({
     defaultValues: {
-      password: "",
+      newPassword: "",
     },
     validators: {
       onSubmit: z.object({
-        password: z
+        newPassword: z
           .string()
           .min(8, "Password must be at least 8 characters long"),
       }),
     },
     onSubmit: async ({ value }) => {
-      console.log({ value });
+      await setPassword(value.newPassword).then((res) => {
+        if (res.success) {
+          toast.success(res.message);
+        } else {
+          toast.error(res.error.message);
+        }
+      });
     },
   });
 
+  const toggleSetPassword = useSecurityStore(
+    (state) => state.toggleSetPassword,
+  );
+
   return (
-    <div className="w-full space-y-4 rounded-md border p-4">
-      <header className="flex flex-col items-center justify-center">
-        <h3 className="font-semibold">Verification required</h3>
-        <p className="text-muted-foreground text-center text-sm">
-          Enter your current password to continue
-        </p>
-      </header>
+    <div className="flex-1 rounded-md border p-4">
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -42,18 +50,18 @@ export default function UserSetPasskey() {
       >
         <FieldGroup>
           <FieldSet className="gap-4">
-            <form.AppField name="password">
-              {(field) => <field.InputPassword label="Password" />}
+            <form.AppField name="newPassword">
+              {(field) => <field.InputPassword label="New Password" />}
             </form.AppField>
             <div className="mt-4 flex flex-row items-center justify-end gap-4">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => toggleSetPasskey()}
+                onClick={toggleSetPassword}
               >
                 Cancel
               </Button>
-              <Button type="submit">Continue</Button>
+              <Button type="submit">Set Password</Button>
             </div>
           </FieldSet>
         </FieldGroup>

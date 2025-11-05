@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/dialog";
 
 import { authClient } from "@/config/auth/client";
-import ButtonEdit from "@/features/modals/components/button-edit";
-import UserProfileForm from "@/features/user/components/form/user-profile-form";
+import ButtonEdit from "@/features/modals/components/action-button/button-edit-profile";
+import UserProfileForm from "@/features/modals/components/form/user-profile-form";
 
 export const DialogProfile = () => {
   const { data, refetch } = authClient.useSession();
