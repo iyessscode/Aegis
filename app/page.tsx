@@ -1,7 +1,48 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+
+const features = [
+  {
+    name: "Email & Password",
+    link: "https://www.better-auth.com/docs/authentication/email-password",
+  },
+  {
+    name: "Organization | Teams",
+    link: "https://www.better-auth.com/docs/plugins/organization",
+  },
+  {
+    name: "Passkeys",
+    link: "https://www.better-auth.com/docs/plugins/passkey",
+  },
+  {
+    name: "Multi Factor",
+    link: "https://www.better-auth.com/docs/plugins/2fa",
+  },
+  {
+    name: "Password Reset",
+    link: "https://www.better-auth.com/docs/authentication/email-password#request-password-reset",
+  },
+  {
+    name: "Email Verification",
+    link: "https://www.better-auth.com/docs/authentication/email-password#email-verification",
+  },
+  {
+    name: "Roles & Permissions",
+    link: "https://www.better-auth.com/docs/plugins/organization#roles",
+  },
+  {
+    name: "Rate Limiting",
+    link: "https://www.better-auth.com/docs/reference/security#rate-limiting",
+  },
+  {
+    name: "Session Management",
+    link: "https://www.better-auth.com/docs/concepts/session-management",
+  },
+];
 
 export default function HomePage() {
   return (
@@ -27,6 +68,17 @@ export default function HomePage() {
           login is verified, encrypted, and trusted — your digital shield for
           access security.
         </p>
+        <div className="mt-6 flex flex-wrap justify-center gap-2">
+          {features.map((feature) => (
+            <Link
+              key={feature.name}
+              href={feature.link}
+              className="text-muted-foreground hover:text-foreground hover:border-foreground flex cursor-pointer items-center gap-1 border-b pb-1 text-xs transition-all duration-150 ease-in-out"
+            >
+              {feature.name}
+            </Link>
+          ))}
+        </div>
         <Button size="lg" className="mt-12 md:mt-6" asChild>
           <Link href="/sign-in">Get Started!</Link>
         </Button>

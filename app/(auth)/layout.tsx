@@ -1,7 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 import { XIcon } from "lucide-react";
+
+import { authClient } from "@/config/auth/client";
 
 import { Button } from "@/components/ui/button";
 
@@ -10,6 +17,20 @@ type Props = {
 };
 
 export default function AuthLayout({ children }: Props) {
+  const router = useRouter();
+  useEffect(() => {
+    authClient.oneTap({
+      fetchOptions: {
+        onError: async (ctx) => {
+          toast.error(ctx.error.message || "An error occurred");
+        },
+        onSuccess: (ctx) => {
+          toast.success(`Welcome, ${ctx.data.user.name!}`);
+          router.push("/welcome");
+        },
+      },
+    });
+  }, []);
   return (
     <div className="mx-auto h-screen max-w-7xl">
       <header className="h-16 px-4 sm:px-0">

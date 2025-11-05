@@ -12,7 +12,7 @@ import { toNextJsHandler } from "better-auth/next-js";
 import { NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@/config/auth/server";
-import { env } from "@/data/env";
+import { env } from "@/data/env/server";
 
 const aj = arcjet({
   key: env.ARCJET_KEY,

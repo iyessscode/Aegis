@@ -20,6 +20,21 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async headers() {
+    return process.env.NODE_ENV !== "production"
+      ? [
+          {
+            source: "/:path*",
+            headers: [
+              {
+                key: "Referrer-Policy",
+                value: "no-referrer-when-downgrade",
+              },
+            ],
+          },
+        ]
+      : [];
+  },
 };
 
 export default nextConfig;
