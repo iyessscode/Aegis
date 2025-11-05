@@ -1,7 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useSecurityStore } from "@/store/use-security-store";
+
+import { Button } from "@/components/ui/button";
 
 type Props = {
   hasPassword: Boolean;
@@ -25,9 +26,9 @@ export default function ButtonPassword({ hasPassword }: Props) {
     <Button
       variant="ghost"
       onClick={toggleSetPassword}
-      className="text-primary"
+      className="text-primary flex w-full justify-start"
     >
-      Set password
+      + Set password
     </Button>
   );
 }
