@@ -28,7 +28,7 @@ export default function ButtonPassword({ hasPassword }: Props) {
       onClick={toggleSetPassword}
       className="text-primary flex w-full justify-start"
     >
-      Set password
+      + Set password
     </Button>
   );
 }
