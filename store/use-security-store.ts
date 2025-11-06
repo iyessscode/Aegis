@@ -7,6 +7,7 @@ type States = {
   isSetPassword: boolean;
   isSetPasskey: boolean;
   isUpdatePasskey: boolean;
+  isEnable2FA: boolean;
 };
 
 type Actions = {
@@ -14,6 +15,7 @@ type Actions = {
   toggleSetPassword: () => void;
   toggleUpdatePasskey: () => void;
   toggleSetPasskey: () => void;
+  toggle2FA: () => void;
 };
 
 export const useSecurityStore = create<States & Actions>()((set) => ({
@@ -21,6 +23,7 @@ export const useSecurityStore = create<States & Actions>()((set) => ({
   isSetPassword: false,
   isUpdatePasskey: false,
   isSetPasskey: false,
+  isEnable2FA: false,
 
   toggleUpdatePassword: () => {
     set((state) => ({ isUpdatePassword: !state.isUpdatePassword }));
@@ -33,5 +36,8 @@ export const useSecurityStore = create<States & Actions>()((set) => ({
   },
   toggleSetPasskey: () => {
     set((state) => ({ isSetPasskey: !state.isSetPasskey }));
+  },
+  toggle2FA: () => {
+    set((state) => ({ isEnable2FA: !state.isEnable2FA }));
   },
 }));

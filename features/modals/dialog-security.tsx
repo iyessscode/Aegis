@@ -15,7 +15,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import PasswordManagement from "./components/security/password-management";
+
+import TwoFAManagement from "@/features/modals/components/security/2fa-management";
+import PasswordManagement from "@/features/modals/components/security/password-management";
 
 const listSession: Session[] = [
   {
@@ -82,12 +84,7 @@ export const DialogSecurity = () => {
         <ScrollArea className="max-h-160 w-full md:max-h-128">
           <div className="flex flex-col gap-4 p-4">
             <PasswordManagement />
-            <DialogActions
-              keyFeatures="Two FA"
-              value={null}
-              action={() => {}}
-              actionLabel="Add two-setp verification"
-            />
+            <TwoFAManagement />
             <SessionManagement
               sessions={listSession}
               currentSessionToken={currentSession.token}
