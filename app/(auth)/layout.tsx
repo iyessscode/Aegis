@@ -18,7 +18,11 @@ type Props = {
 
 export default function AuthLayout({ children }: Props) {
   const router = useRouter();
+  const { data, isPending } = authClient.useSession();
+
   useEffect(() => {
+    if (!isPending && data == null) router.push("/welcome");
+
     authClient.oneTap({
       fetchOptions: {
         onError: async (ctx) => {

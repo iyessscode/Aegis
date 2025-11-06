@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
 
@@ -13,6 +14,12 @@ import { useAppForm } from "@/features/form/hooks/form-hook";
 import { useSecurityStore } from "@/store/use-security-store";
 
 export default function UserUpdatePassword() {
+  const toggleUpdatePassword = useSecurityStore(
+    (state) => state.toggleUpdatePassword,
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
+
   const form = useAppForm({
     defaultValues: {
       currentPassword: "",
@@ -36,6 +43,9 @@ export default function UserUpdatePassword() {
         }),
     },
     onSubmit: async ({ value }) => {
+      const controller = new AbortController();
+      abortRef.current = controller;
+
       await authClient.changePassword(
         {
           currentPassword: value.currentPassword,
@@ -43,20 +53,32 @@ export default function UserUpdatePassword() {
           revokeOtherSessions: true,
         },
         {
+          signal: controller.signal,
+          onRequest: () => setIsLoading(true),
+          onResponse: () => setIsLoading(false),
           onSuccess() {
             toast.success("Password successfully updated");
+            form.reset();
+            toggleUpdatePassword();
           },
           onError(ctx) {
             toast.error(ctx.error.message);
           },
         },
       );
+      abortRef.current = null;
     },
   });
 
-  const toggleUpdatePassword = useSecurityStore(
-    (state) => state.toggleUpdatePassword,
-  );
+  const handleCancel = () => {
+    if (abortRef.current) {
+      abortRef.current.abort();
+      abortRef.current = null;
+    }
+    setIsLoading(false);
+    form.reset();
+    toggleUpdatePassword();
+  };
 
   return (
     <div className="w-full rounded-md border p-4">
@@ -78,14 +100,12 @@ export default function UserUpdatePassword() {
               {(field) => <field.InputPassword label="New Password" />}
             </form.AppField>
             <div className="mt-4 flex flex-row items-center justify-end gap-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={toggleUpdatePassword}
-              >
+              <Button type="button" variant="outline" onClick={handleCancel}>
                 Cancel
               </Button>
-              <Button type="submit">Update Password</Button>
+              <Button type="submit" disabled={isLoading}>
+                Update Password
+              </Button>
             </div>
           </FieldSet>
         </FieldGroup>

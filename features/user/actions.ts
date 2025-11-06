@@ -20,13 +20,26 @@ export const setPassword = async (
   newPassword: string,
 ): Promise<ActionResult> => {
   try {
+    const headers = await nextHeaders();
+
     const response = await auth.api.setPassword({
-      headers: await nextHeaders(),
+      headers,
       body: {
         newPassword,
       },
       asResponse: true,
     });
+
+    if (!response.ok) {
+      const error = await response.json();
+      return {
+        success: false,
+        error: {
+          code: error.code ?? "FAILED",
+          message: error.message ?? "Failed to set password",
+        },
+      };
+    }
 
     return {
       success: true,
@@ -35,12 +48,12 @@ export const setPassword = async (
     };
   } catch (error) {
     console.log({ error });
-    if (error instanceof APIError) {
+    if (error instanceof DOMException && error.name === "AbortError") {
       return {
         success: false,
         error: {
-          code: error.body?.code,
-          message: error.body?.message ?? "Failed to set password",
+          code: "ABORTED",
+          message: "Password update canceled",
         },
       };
     }
@@ -49,7 +62,7 @@ export const setPassword = async (
       success: false,
       error: {
         code: "INTERNAL_SERVER_ERROR",
-        message: "An unexpected error occurred",
+        message: "Unexpected error occurred",
       },
     };
   }

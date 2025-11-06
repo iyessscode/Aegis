@@ -1,6 +1,5 @@
 import Image from "next/image";
 
-import { auth } from "@/config/auth/server";
 import { UserButton } from "@/features/user/components/user-button";
 import { getCurrentUser } from "@/features/user/user-queries";
 import { Suspense } from "react";
