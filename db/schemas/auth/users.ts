@@ -11,6 +11,7 @@ import {
 import { accounts } from "@/db/schemas/auth/accounts";
 import { authSchema } from "@/db/schemas/auth/auth-schema";
 import { sessions } from "@/db/schemas/auth/sessions";
+import { twoFactors } from "@/db/schemas/auth/two-factors";
 
 export const users = authSchema.table(
   "users",
@@ -21,6 +22,7 @@ export const users = authSchema.table(
     emailVerified: boolean("email_verified").default(false).notNull(),
     image: text("image"),
     image_key: text("image_key"),
+    twoFactorEnabled: boolean("two_factor_enabled").default(false),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
@@ -34,7 +36,8 @@ export const users = authSchema.table(
   ],
 );
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ one, many }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
+  twoFactor: one(twoFactors),
 }));

@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { oneTap } from "better-auth/plugins";
+import { oneTap, twoFactor } from "better-auth/plugins";
 
 import { env as envClient } from "@/data/env/client";
 import { env as envServer } from "@/data/env/server";
@@ -107,5 +107,6 @@ export const auth = betterAuth({
       disableSignup: false,
       clientId: envClient.GOOGLE_CLIENT_ID,
     }),
+    twoFactor(),
   ],
 });
