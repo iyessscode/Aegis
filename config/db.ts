@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/neon-http";
 
-import { env } from "@/data/env";
+import { env } from "@/data/env/server";
 
 import * as schema from "@/db/schema";
 

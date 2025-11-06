@@ -22,6 +22,13 @@
       "when": 1762264550242,
       "tag": "0002_fine_risque",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1762361778150,
+      "tag": "0003_charming_whiplash",
+      "breakpoints": true
     }
   ]
 }

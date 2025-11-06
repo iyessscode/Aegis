@@ -1,9 +1,10 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { passkey } from "better-auth/plugins/passkey";
+import { oneTap } from "better-auth/plugins";
 
-import { env } from "@/data/env";
+import { env as envClient } from "@/data/env/client";
+import { env as envServer } from "@/data/env/server";
 import { getSubjectText } from "@/lib/email";
 
 import { db } from "@/config/db";
@@ -30,7 +31,7 @@ export const auth = betterAuth({
     requireEmailVerification: true,
     async sendResetPassword({ user, url }) {
       await resend.emails.send({
-        from: env.RESEND_SENDER_EMAIL,
+        from: envClient.RESEND_SENDER_EMAIL,
         to: user.email,
         subject: getSubjectText("forget-password"),
         react: SendEmail({
@@ -49,7 +50,7 @@ export const auth = betterAuth({
     expiresIn: 60 * 15, // 15 minutes
     async sendVerificationEmail({ user, url }) {
       await resend.emails.send({
-        from: env.RESEND_SENDER_EMAIL,
+        from: envClient.RESEND_SENDER_EMAIL,
         to: user.email,
         subject: getSubjectText("email-verification"),
         react: SendEmail({
@@ -63,12 +64,12 @@ export const auth = betterAuth({
   },
   socialProviders: {
     google: {
-      clientId: env.GOOGLE_CLIENT_ID,
-      clientSecret: env.GOOGLE_CLIENT_SECRET,
+      clientId: envClient.GOOGLE_CLIENT_ID,
+      clientSecret: envServer.GOOGLE_CLIENT_SECRET,
     },
     github: {
-      clientId: env.GITHUB_CLIENT_ID,
-      clientSecret: env.GITHUB_CLIENT_SECRET,
+      clientId: envClient.GITHUB_CLIENT_ID,
+      clientSecret: envServer.GITHUB_CLIENT_SECRET,
     },
   },
   session: {
@@ -89,7 +90,7 @@ export const auth = betterAuth({
       async sendChangeEmailVerification({ user, url }) {
         console.log({ url });
         await resend.emails.send({
-          from: env.RESEND_SENDER_EMAIL,
+          from: envClient.RESEND_SENDER_EMAIL,
           to: user.email,
           subject: "Approve email change",
           react: ChangeEmailVerification({
@@ -100,5 +101,11 @@ export const auth = betterAuth({
       },
     },
   },
-  plugins: [nextCookies()],
+  plugins: [
+    nextCookies(),
+    oneTap({
+      disableSignup: false,
+      clientId: envClient.GOOGLE_CLIENT_ID,
+    }),
+  ],
 });
